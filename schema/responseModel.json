@@ -1,0 +1,56 @@
+{
+    "messages": {
+        "1": {
+            "contentType": "SingleMessage",
+            "content": "Thanks for reaching out. How can I help?"
+        },
+        "2": {
+            "contentType": "MultiMessage",
+            "content": [
+                {
+                    "contentType": "PlainText",
+                    "content": "Thanks for reaching out. How can I help?"
+                },
+                {
+                    "contentType": "QuickReplies",
+                    "content": "Thanks for reaching out. How can I help?",
+                    "options": [
+                        "Device",
+                        "Onboading",
+                        "TechSupport"
+                    ]
+                }
+            ]
+        },
+        "3": {
+            "contentType": "MultiMessage",
+            "content": [
+                {
+                    "contentType": "ApiPlainText",
+                    "content": "Your device delivery status is $$$",
+                    "delimiter": "$$$",
+                    "api": {
+                        "endpoint": "url",
+                        "method": "post",
+                        "headers": {},
+                        "data": {},
+                        "authentication": {}
+                    },
+                    "parserConditions": {
+                        "path": "data.policy.drivewise.status",
+                        "function": "getDrivewiseValue"
+                    }
+                },
+                {
+                    "contentType": "QuickReplies",
+                    "content": "Thanks for reaching out. How can I help?",
+                    "options": [
+                        "Device",
+                        "Onboading",
+                        "TechSupport"
+                    ]
+                }
+            ]
+        }
+    }
+}
