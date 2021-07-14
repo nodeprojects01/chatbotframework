@@ -43,26 +43,31 @@ function getPathsOfValue(obj, value) {
 
 async function main(event) {
     try {
-        const rootNode = model.intents.filter(o => { return o.value == event.intent });
-        const intentIndex = model.intents.findIndex(item => item.value === event.intent );
-        
+        const rootNode = model.intents.filter(o => o.value == event.intent);
+
         if (rootNode) {
             const slots = getSlotValues(event.slots);
             log.info(`main: input event contains ${slots.length} slot values`);
             if (slots.length >= 1) {
-                const paths = await new SearchTree(rootNode[0]).getPath(slots);
-                log.info(`main: identified ${paths.length} paths`);
-                log.debug(`main: paths - ${paths}`);
-                if (paths.length >= 2) {
+                const st = new SearchTree(rootNode[0])
+                await st.execute(slots);
+                const dotPaths = st.getDotPaths();
+                log.info(`main: identified ${dotPaths.length} paths`);
+                log.debug(`main: paths - ${dotPaths}`);
+
+                const intentIndex = model.intents.findIndex(item => item.value === event.intent);
+                if (dotPaths.length >= 2) {
                     // return generic message for confirmation
-                    const strPath = `intents[${intentIndex}]` + paths[1];
+                    const strPath = `intents[${intentIndex}]` + dotPaths[1];
                     const targetNode = lodash(model, strPath);
+                    log.debug(">>"+ targetNode.value);
                 }
-                else if (paths.length == 1) {
+                else if (dotPaths.length == 1) {
                     // if it not a leaf node (or response type is close) then return the message 
                     // else ask for next slot options
-                    const strPath = `intents[${intentIndex}]` + paths[0];
+                    const strPath = `intents[${intentIndex}]` + dotPaths[0];
                     const targetNode = lodash(model, strPath);
+                    log.debug(targetNode);
                 }
                 else {
                     // return exception message
