@@ -4,6 +4,7 @@ const model = require("./schema/botModel.json");
 const response = require("./schema/responseModel.json");
 const { log } = require("./config/logger");
 const SearchTree = require("./nodes/TraverseNode");
+const lodash = require('lodash.get');
 
 const event = {
     query: "hello",
@@ -24,15 +25,6 @@ function getSlotValues(slots) {
     return availableSlots;
 }
 
-function checkValueInObjectArray(arr, key, value) {
-    var res = null;
-    arr.forEach(element => {
-        if (element[key] == value) {
-            res = element;
-        }
-    });
-    return res;
-}
 
 function getPathsOfValue(obj, value) {
     return Object
@@ -51,19 +43,26 @@ function getPathsOfValue(obj, value) {
 
 async function main(event) {
     try {
-        const rootNode = checkValueInObjectArray(model.intents, "value", event.intent);
+        const rootNode = model.intents.filter(o => { return o.value == event.intent });
+        const intentIndex = model.intents.findIndex(item => item.value === event.intent );
+        
         if (rootNode) {
             const slots = getSlotValues(event.slots);
             log.info(`main: input event contains ${slots.length} slot values`);
             if (slots.length >= 1) {
-                const paths = await new SearchTree(rootNode).getPath(slots);
+                const paths = await new SearchTree(rootNode[0]).getPath(slots);
                 log.info(`main: identified ${paths.length} paths`);
+                log.debug(`main: paths - ${paths}`);
                 if (paths.length >= 2) {
                     // return generic message for confirmation
+                    const strPath = `intents[${intentIndex}]` + paths[1];
+                    const targetNode = lodash(model, strPath);
                 }
                 else if (paths.length == 1) {
                     // if it not a leaf node (or response type is close) then return the message 
                     // else ask for next slot options
+                    const strPath = `intents[${intentIndex}]` + paths[0];
+                    const targetNode = lodash(model, strPath);
                 }
                 else {
                     // return exception message
