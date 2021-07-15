@@ -1,5 +1,6 @@
 
 const RESTNode = require("./RESTNode");
+const responseModel = require("../schema/responseModel.json");
 const lodash = require('lodash.get');
 const { log } = require("../config/logger");
 const { performance } = require('perf_hooks');
@@ -61,7 +62,7 @@ const dynamicResponseTypes = {
     database: "Database"
 }
 
-function response(type, message, options = []) {
+function responseInstance(type, message, options = []) {
     try {
         if (Object.values(responseTypes).includes(type)) {
             switch (type) {
@@ -83,8 +84,8 @@ function response(type, message, options = []) {
     }
 }
 
-
-async function reponseFormatter(resp) {
+async function reponseFormatter(targetNode) {
+    const resp = responseModel.messages[targetNode.message];
     var formattedResponse = [];
     if (resp && resp.length >= 1) {
         try {
@@ -101,8 +102,8 @@ async function reponseFormatter(resp) {
                                 const rm = lodash(succ, p);
                                 msg = msg.replace(m.ext.replacePaths[p], rm);
                             });
-                            var res = response(ty[0], msg, m.options);
-                            formattedResponse.push(res);
+                            var res = responseInstance(ty[0], msg, m.options);
+                            formattedResponse.push(res.message());
                         }).catch(e => {
                             log.error(`${filename} > ${arguments.callee.name}: error while fetching api data`);
                             throw new Error("error while fetching api data");
@@ -110,8 +111,26 @@ async function reponseFormatter(resp) {
                     }
                 }
                 else {
-                    var res = response(m.contentType, msg, m.options);
-                    formattedResponse.push(res);
+                    // check the format of the options and prepare for response
+                    // [] - options no required, [*] - add all slot values as options, ["val1", "val2", "val3"] - options pre-defined
+                    if (!m.options || m.options.length == 0) {
+                        var res = responseInstance(m.contentType, msg, m.options);
+                        formattedResponse.push(res.message());
+                    }
+                    else if (m.options.length > 0) {
+                        if (m.options[0] == "*") {
+                            var targetSlots = [];
+                            targetNode.values.forEach(o => {
+                                targetSlots.push(o.value);
+                            });
+                            var res = responseInstance(m.contentType, msg, targetSlots);
+                            formattedResponse.push(res.message());
+                        }
+                        else {
+                            var res = responseInstance(m.contentType, msg, m.options);
+                            formattedResponse.push(res.message());
+                        }
+                    }
                 }
             }
             return formattedResponse;
@@ -126,10 +145,6 @@ async function reponseFormatter(resp) {
         log.error(`${filename} > ${arguments.callee.name}: invalid input response`);
         throw new Error("invalid input response");
     }
-    return formattedResponse;
 }
 
-module.exports = { response, responseTypes, reponseFormatter };
-
-// var resp = response(responseTypes.quickReplies, "I can help you with below options", ["timesheet", "payslip"]);
-// console.log(resp.message());
+module.exports = { responseTypes, reponseFormatter };

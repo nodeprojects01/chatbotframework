@@ -10,7 +10,7 @@
             "error": [
                 {
                     "contentType": "PlainText",
-                    "content": "While I am fetching the answers from Jupiter, you can ask me a different query"
+                    "content": "I am watching the Jupiter ring in space, I will be back soon"
                 }
             ]
         },
@@ -57,7 +57,7 @@
             },
             {
                 "contentType": "QuickReplies",
-                "content": "Thanks for reaching out. How can I help?",
+                "content": "Please confirm your location?",
                 "options": [
                     "*"
                 ]

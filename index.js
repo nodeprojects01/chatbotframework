@@ -1,6 +1,6 @@
 
 const model = require("./schema/botModel.json");
-const response = require("./schema/responseModel.json");
+const responseModel = require("./schema/responseModel.json");
 const { log } = require("./config/logger");
 const SearchTree = require("./nodes/TraverseNode");
 const ResponseNode = require("./nodes/ResponseNode");
@@ -66,20 +66,20 @@ async function main(event) {
                     // else ask for next slot options
                     const strPath = `intents[${intentIndex}]` + dotPaths[0];
                     const targetNode = lodash(model, strPath);
-                    await ResponseNode.reponseFormatter(response.messages[targetNode.message]).then(res =>{
+                    await ResponseNode.reponseFormatter(targetNode).then(res =>{
                         log.info(`${filename} > ${arguments.callee.name}: response is successfuly formatted`);
-                        log.debug(`${filename} > ${arguments.callee.name}: response - ${res}`);
+                        log.debug(`${filename} > ${arguments.callee.name}: response - ${JSON.stringify(res)}`);
                         return res;
                     }).catch(e => {
                         log.error(`${filename} > ${arguments.callee.name}: error while formatting the response ${e}`);
-                        return {}
+                        return responseModel.messages.default.error;
                     });
                 }
                 else {
                     // return exception message
                     // bot model must have invalid values that are not matching the bot's slot values
                     log.error(`${filename} > ${arguments.callee.name}: bot model must have invalid values that are not matching the bot's slot values`);
-                    return response.messages.default.error;
+                    return responseModel.messages.default.error;
                 }
             }
             else {
@@ -92,7 +92,7 @@ async function main(event) {
             // return exception message
             // bot model must have invalid values that are not matching the bot's slot values
             log.error(`${filename} > ${arguments.callee.name}: bot model must have invalid intent name that is not matching the bot's intent`);
-            return response.messages.default.error;
+            return responseModel.messages.default.error;
         }
     }
     catch (e) {
@@ -104,5 +104,5 @@ async function main(event) {
 
 
 main(event).then((res) => {
-    log.info("finished -" + JSON.stringify(res));
+    log.info(res);
 });
