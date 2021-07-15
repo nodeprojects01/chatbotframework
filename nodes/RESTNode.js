@@ -1,7 +1,9 @@
-"use strict";
 
 const axios = require("axios");
 const axiosRetry = require('axios-retry');
+const { log } = require("../config/logger");
+const { performance } = require('perf_hooks');
+const filename = __filename.slice(__dirname.length + 1, -3);
 
 class RESTNode {
     constructor(params, retryEnabled = true) {
@@ -35,13 +37,13 @@ class RESTNode {
                 timeout: this.httpTimeout,
                 maxContentLength: this.httpMaxContentLength
             });
-            
+
             if (this.retryEnabled) {
                 axiosRetry(axiosObj, {
                     retries: this.maxRetryCount,
                     shouldResetTimeout: true,
                     retryDelay: (retryCount) => {
-                        console.log(`Retrying ${retryCount} / ${this.maxRetryCount}`);
+                       log.info(`${filename} > execute: execute: Retrying ${retryCount} / ${this.maxRetryCount}`);
                         return retryCount * this.delayRetry;
                     }
                 });
@@ -50,22 +52,25 @@ class RESTNode {
             axiosObj.request(this.pathname).then((response) => {
                 var responseStatusCode = response.status || 200;
                 var result = response.data;
-                console.log(`Success status code: ${responseStatusCode}`);
-                console.log(`REST Node finished in ${this.timeTaken(sdt)}s`);
+                log.info(`${filename} > execute: success status code: ${responseStatusCode}`);
+                log.info(`${filename} > execute: REST Node finished in ${this.timeTaken(sdt)}s`);
+                log.debug(`${filename} > execute: API data - ${typeof (result) == "object" ? JSON.stringify(result) : result}`);
                 resolve(result);
             }).catch((error) => {
                 // var responseStatusCode = error.response.status;
-                console.log(`REST Node finished in ${this.timeTaken(sdt)}s`);
+                log.info(`${filename} > execute: REST Node finished in ${this.timeTaken(sdt)}s`);
                 var errorDetails = {
-                    status: error.response.status,
-                    statusText: error.response.statusText,
-                    message: error.message
+                    status: error.response.status ? error.response.status : "500",
+                    statusText: error.response.statusText ? error.response.statusText : "Fail",
+                    message: error.message ? error.message : "Error"
                 }
                 reject(errorDetails);
             });
         });
     }
 }
+
+module.exports = RESTNode;
 
 // const abc = new RESTNode({
 //     "url": "https://reqres.in/api/users",
@@ -78,8 +83,8 @@ class RESTNode {
 // });
 
 // abc.execute().then((res) => {
-//     console.log(res);
+//     log.info(res);
 // }).catch((err) => {
-//     console.log("---");
-//     console.log(err);
+//     log.info("---");
+//     log.info(err);
 // });

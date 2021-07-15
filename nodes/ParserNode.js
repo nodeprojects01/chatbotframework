@@ -1,0 +1,1 @@
+const filename = __filename.slice(__dirname.length + 1, -3);

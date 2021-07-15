@@ -25,7 +25,7 @@
                             "value": "Replace",
                             "responseType": "ElicitSlot",
                             "slot": "State",
-                            "message": "2",
+                            "message": "3",
                             "values": [
                                 {
                                     "value": "NY",
@@ -65,38 +65,7 @@
                     "responseType": "ElicitSlot",
                     "slot": "TechSupportType",
                     "message": "4",
-                    "values": [
-                        {
-                            "value": "Device",
-                            "responseType": "Close",
-                            "slot": null,
-                            "message": "2",
-                            "values": [
-                                {
-                                    "value": "Replace",
-                                    "responseType": "ElicitSlot",
-                                    "slot": "State",
-                                    "message": "2",
-                                    "values": [
-                                        {
-                                            "value": "NY",
-                                            "responseType": "Close",
-                                            "slot": null,
-                                            "message": "2",
-                                            "values": []
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            "value": "Return",
-                            "responseType": "Close",
-                            "slot": null,
-                            "message": "3",
-                            "values": []
-                        }
-                    ]
+                    "values": []
                 }
             ]
         },

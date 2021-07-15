@@ -1,7 +1,7 @@
-var jp = require('jsonpath');
 
-const data = require('./schema/botModel.json');
+function testing(){
+    console.log(arguments.callee.name);
+    console.log(__filename.slice(__dirname.length + 1, -3));
+}
 
-var authors = jp.value(data, '$..message');
-
-console.log(authors);
+testing();

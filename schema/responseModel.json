@@ -1,56 +1,67 @@
 {
     "messages": {
-        "1": {
-            "contentType": "SingleMessage",
-            "content": "Thanks for reaching out. How can I help?"
-        },
-        "2": {
-            "contentType": "MultiMessage",
-            "content": [
+        "default": {
+            "escalate": [
                 {
                     "contentType": "PlainText",
-                    "content": "Thanks for reaching out. How can I help?"
-                },
+                    "content": "Please wait while I connect you to a live representative"
+                }
+            ],
+            "error": [
                 {
-                    "contentType": "QuickReplies",
-                    "content": "Thanks for reaching out. How can I help?",
-                    "options": [
-                        "Device",
-                        "Onboading",
-                        "TechSupport"
-                    ]
+                    "contentType": "PlainText",
+                    "content": "While I am fetching the answers from Jupiter, you can ask me a different query"
                 }
             ]
         },
-        "3": {
-            "contentType": "MultiMessage",
-            "content": [
-                {
-                    "contentType": "ApiPlainText",
-                    "content": "Your device delivery status is $$$",
-                    "delimiter": "$$$",
-                    "api": {
-                        "endpoint": "url",
+        "1": [
+            {
+                "contentType": "PlainText",
+                "content": "Thanks for reaching out. How can I help?"
+            }
+        ],
+        "2": [
+            {
+                "contentType": "PlainText",
+                "content": "Thanks for reaching out. How can I help?"
+            },
+            {
+                "contentType": "QuickReplies",
+                "content": "Thanks for reaching out. How can I help?",
+                "options": [
+                    "Device",
+                    "Onboading",
+                    "TechSupport"
+                ]
+            }
+        ],
+        "3": [
+            {
+                "contentType": "PlainTextByApi",
+                "content": "Your device would be delivered by str_01 str_02",
+                "ext": {
+                    "replacePaths": {
+                        "date": "str_01",
+                        "time": "str_02"
+                    },
+                    "delimiter": "***",
+                    "params": {
+                        "url": "http://date.jsontest.com/",
                         "method": "post",
                         "headers": {},
-                        "data": {},
+                        "body": {},
                         "authentication": {}
                     },
-                    "parserConditions": {
-                        "path": "data.policy.drivewise.status",
-                        "function": "getDrivewiseValue"
-                    }
-                },
-                {
-                    "contentType": "QuickReplies",
-                    "content": "Thanks for reaching out. How can I help?",
-                    "options": [
-                        "Device",
-                        "Onboading",
-                        "TechSupport"
-                    ]
+                    "parserConditions": {}
                 }
-            ]
-        }
+            },
+            {
+                "contentType": "QuickReplies",
+                "content": "Thanks for reaching out. How can I help?",
+                "options": [
+                    "*"
+                ]
+            }
+        ]
     }
 }

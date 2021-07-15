@@ -1,10 +1,14 @@
-'use strict';
 
 const { log } = require("../config/logger");
 const { performance } = require('perf_hooks');
+const { isJSON } = require('../utils/helper');
+const filename = __filename.slice(__dirname.length + 1, -3);
 
 class SearchTree {
     constructor(data) {
+        if (!isJSON(data))
+            throw new Error("invalide JSON input");
+
         this.data = data;
         this.searchElements = {};
         this.valuePaths = [];
@@ -12,11 +16,11 @@ class SearchTree {
         this.dotPaths = [];
     }
 
-    getValuePaths(){
+    getValuePaths() {
         return this.valuePaths;
     }
 
-    getDotPaths(){
+    getDotPaths() {
         return this.dotPaths;
     }
 
@@ -24,36 +28,36 @@ class SearchTree {
         searchElements.forEach(e => {
             this.searchElements[e] = 0;
         });
-        log.silly(`execute: tree traversing started to get path of slot values`);
+        log.silly(`${filename} > execute: tree traversing started to get path of slot values`);
         var st = performance.now();
         await this.#traverse(this.data, null);
         var tt = ((performance.now() - st) / 1000).toFixed(2);
-        log.silly(`execute: tree traversing finished in ${tt}s`);
+        log.silly(`${filename} > execute: tree traversing finished in ${tt}s`);
         return this.dotPaths;
     }
 
     #traverse(node, index) {
-        log.debug(``)
-        log.debug(`traverse: current stack values - ${this.stack}`);
+        log.debug(`${filename} > traverse: `)
+        log.debug(`${filename} > traverse: current stack values - ${this.stack}`);
         this.stack.push(node.value + '_' + index);
-        log.debug(`traverse: pushed value to stack - ${node.value}`);
+        log.debug(`${filename} > traverse: pushed value to stack - ${node.value}`);
 
         if (Object.keys(this.searchElements).includes(node.value)) {
             this.searchElements[node.value] += 1
             if (!Object.values(this.searchElements).includes(0)) {
-                log.info(`traverse: path found`);
+                log.info(`${filename} > traverse: path found`);
                 this.makePath();
             }
         }
 
-        log.debug(`traverse: searchElements - ${JSON.stringify(this.searchElements)}`);
+        log.debug(`${filename} > traverse: searchElements - ${JSON.stringify(this.searchElements)}`);
         node.values.forEach((e, i) => {
             this.#traverse(e, i);
             if (Object.keys(this.searchElements).includes(e.value)) {
                 this.searchElements[e.value] -= 1
             }
             this.stack.pop();
-            log.debug(`traverse: popped value from stack - ${this.stack[this.stack.length - 1]}`);
+            log.debug(`${filename} > traverse: popped value from stack - ${this.stack[this.stack.length - 1]}`);
         });
     }
 
@@ -63,14 +67,14 @@ class SearchTree {
         this.stack.forEach((obj, i) => {
             var v = obj.split("_");
             path.push(v[0]);
-            if (v[1] != "null")  {
+            if (v[1] != "null") {
                 strPath = strPath + ".values[" + v[1] + "]"
             }
         })
         this.valuePaths.push(path);
         this.dotPaths.push(strPath);
-        log.debug(`makePath: value path formed - ${path}`);
-        log.debug(`makePath: dot notation path formed - ${strPath}`);
+        log.debug(`${filename} > makePath: value path formed - ${path}`);
+        log.debug(`${filename} > makePath: dot notation path formed - ${strPath}`);
     }
 }
 

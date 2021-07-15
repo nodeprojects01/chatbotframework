@@ -1,10 +1,11 @@
-'use strict';
 
 const model = require("./schema/botModel.json");
 const response = require("./schema/responseModel.json");
 const { log } = require("./config/logger");
 const SearchTree = require("./nodes/TraverseNode");
+const ResponseNode = require("./nodes/ResponseNode");
 const lodash = require('lodash.get');
+const filename = __filename.slice(__dirname.length + 1, -3);
 
 const event = {
     query: "hello",
@@ -44,47 +45,64 @@ function getPathsOfValue(obj, value) {
 async function main(event) {
     try {
         const rootNode = model.intents.filter(o => o.value == event.intent);
-
         if (rootNode) {
             const slots = getSlotValues(event.slots);
-            log.info(`main: input event contains ${slots.length} slot values`);
+            log.info(`${filename} > ${arguments.callee.name}: input event contains ${slots.length} slot values`);
             if (slots.length >= 1) {
                 const st = new SearchTree(rootNode[0])
                 await st.execute(slots);
                 const dotPaths = st.getDotPaths();
-                log.info(`main: identified ${dotPaths.length} paths`);
-                log.debug(`main: paths - ${dotPaths}`);
+                log.info(`${filename} > ${arguments.callee.name}: identified ${dotPaths.length} paths`);
+                log.debug(`${filename} > ${arguments.callee.name}: paths - ${dotPaths}`);
 
                 const intentIndex = model.intents.findIndex(item => item.value === event.intent);
                 if (dotPaths.length >= 2) {
                     // return generic message for confirmation
                     const strPath = `intents[${intentIndex}]` + dotPaths[1];
                     const targetNode = lodash(model, strPath);
-                    log.debug(">>"+ targetNode.value);
                 }
                 else if (dotPaths.length == 1) {
                     // if it not a leaf node (or response type is close) then return the message 
                     // else ask for next slot options
                     const strPath = `intents[${intentIndex}]` + dotPaths[0];
                     const targetNode = lodash(model, strPath);
-                    log.debug(targetNode);
+                    await ResponseNode.reponseFormatter(response.messages[targetNode.message]).then(res =>{
+                        log.info(`${filename} > ${arguments.callee.name}: response is successfuly formatted`);
+                        log.debug(`${filename} > ${arguments.callee.name}: response - ${res}`);
+                        return res;
+                    }).catch(e => {
+                        log.error(`${filename} > ${arguments.callee.name}: error while formatting the response ${e}`);
+                        return {}
+                    });
                 }
                 else {
                     // return exception message
                     // bot model must have invalid values that are not matching the bot's slot values
-                    log.error(`main: bot model must have invalid values that are not matching the bot's slot values`);
+                    log.error(`${filename} > ${arguments.callee.name}: bot model must have invalid values that are not matching the bot's slot values`);
+                    return response.messages.default.error;
                 }
-                return await {};
             }
+            else {
+                // when no slots are available, guide user flow from the root node
+                // return message of the first node
+                return rootNode.message;
+            }
+        }
+        else {
+            // return exception message
+            // bot model must have invalid values that are not matching the bot's slot values
+            log.error(`${filename} > ${arguments.callee.name}: bot model must have invalid intent name that is not matching the bot's intent`);
+            return response.messages.default.error;
         }
     }
     catch (e) {
-        log.error(`main: something went wrong - ${e}`);
+        console.log(e)
+        log.error(`${filename} > ${arguments.callee.name}: something went wrong - ${e}`);
         return e
     }
 }
 
 
 main(event).then((res) => {
-    log.info(JSON.stringify(res));
+    log.info("finished -" + JSON.stringify(res));
 });

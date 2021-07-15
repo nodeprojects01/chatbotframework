@@ -1,3 +1,4 @@
+const filename = __filename.slice(__dirname.length + 1, -3);
 const { createLogger, format, transports, addColors } = require("winston");
 const { combine, timestamp, printf, colorize } = format;
 const appName = require("./config").appName;
