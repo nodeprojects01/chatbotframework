@@ -66,7 +66,7 @@ async function main(event) {
                     // else ask for next slot options
                     const strPath = `intents[${intentIndex}]` + dotPaths[0];
                     const targetNode = lodash(model, strPath);
-                    await ResponseNode.reponseFormatter(targetNode).then(res =>{
+                    return await ResponseNode.reponseFormatter(targetNode).then(res =>{
                         log.info(`${filename} > ${arguments.callee.name}: response is successfuly formatted`);
                         log.debug(`${filename} > ${arguments.callee.name}: response - ${JSON.stringify(res)}`);
                         return res;
@@ -104,5 +104,5 @@ async function main(event) {
 
 
 main(event).then((res) => {
-    log.info(res);
+    console.log(res);
 });
