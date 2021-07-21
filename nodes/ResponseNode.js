@@ -84,54 +84,67 @@ function responseInstance(type, message, options = []) {
     }
 }
 
+async function apiResponse(responseNode, responseType) {
+    log.info(`${filename} > ${arguments.callee.name}: calling the RESTNode`);
+    var msg = responseNode.content;
+    var formattedResponse = [];
+    const rn = new RESTNode(responseNode.ext.params);
+    await rn.execute().then(succ => {
+        Object.keys(responseNode.ext.replacePaths).forEach(p => {
+            const rm = lodash(succ, p);
+            msg = msg.replace(responseNode.ext.replacePaths[p], rm);
+        });
+        var res = responseInstance(responseType, msg, responseNode.options);
+        formattedResponse.push(res.message());
+    }).catch(e => {
+        log.error(`${filename} > ${arguments.callee.name}: error while fetching api data`);
+        throw new Error("error while fetching api data");
+    });
+    return formattedResponse;
+}
+
+function getButtonOptions(responseNode, targetNode) {
+    // check the format of the options and prepare for response
+    // [] - options not required, [*] - add all slot values as options, ["val1", "val2", "val3"] - options pre-defined
+    var formattedResponse = [];
+    if (!responseNode.options || responseNode.length == 0) {
+        return formattedResponse;
+    }
+
+    if (responseNode.options[0] == "*") {
+        var targetSlots = [];
+        targetNode.values.forEach(o => {
+            targetSlots.push(o.value);
+        });
+        var res = responseInstance(responseNode.contentType, responseNode.content, targetSlots);
+        formattedResponse.push(res.message());
+    }
+    else {
+        var res = responseInstance(responseNode.contentType, responseNode.content, responseNode.options);
+        formattedResponse.push(res.message());
+    }
+    return formattedResponse;
+}
+
 async function reponseFormatter(targetNode) {
     const resp = responseModel.messages[targetNode.message];
     var formattedResponse = [];
     if (resp && resp.length >= 1) {
         try {
             for (const m of resp) {
-                var msg = m.content;
                 if (m.contentType.indexOf("By") != -1) {
                     const ty = m.contentType.split("By");
                     if (ty[1] == dynamicResponseTypes.api) {
                         // call REST node
-                        log.info(`${filename} > ${arguments.callee.name}: calling the RESTNode`);
-                        const rn = new RESTNode(m.ext.params);
-                        await rn.execute().then(succ => {
-                            Object.keys(m.ext.replacePaths).forEach(p => {
-                                const rm = lodash(succ, p);
-                                msg = msg.replace(m.ext.replacePaths[p], rm);
-                            });
-                            var res = responseInstance(ty[0], msg, m.options);
-                            formattedResponse.push(res.message());
-                        }).catch(e => {
-                            log.error(`${filename} > ${arguments.callee.name}: error while fetching api data`);
-                            throw new Error("error while fetching api data");
-                        });
+                        var apiResp = await apiResponse(m, ty[0]);
+                        // console.log(apiResp);
+                        formattedResponse = formattedResponse.concat(apiResp);
                     }
                 }
-                else {
-                    // check the format of the options and prepare for response
-                    // [] - options no required, [*] - add all slot values as options, ["val1", "val2", "val3"] - options pre-defined
-                    if (!m.options || m.options.length == 0) {
-                        var res = responseInstance(m.contentType, msg, m.options);
-                        formattedResponse.push(res.message());
-                    }
-                    else if (m.options.length > 0) {
-                        if (m.options[0] == "*") {
-                            var targetSlots = [];
-                            targetNode.values.forEach(o => {
-                                targetSlots.push(o.value);
-                            });
-                            var res = responseInstance(m.contentType, msg, targetSlots);
-                            formattedResponse.push(res.message());
-                        }
-                        else {
-                            var res = responseInstance(m.contentType, msg, m.options);
-                            formattedResponse.push(res.message());
-                        }
-                    }
-                }
+                var buttonResp = getButtonOptions(m, targetNode);
+                // console.log(buttonResp);
+                formattedResponse = formattedResponse.concat(buttonResp);
+                // }
             }
             return formattedResponse;
         }

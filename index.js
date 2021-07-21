@@ -58,6 +58,7 @@ async function main(event) {
                 const intentIndex = model.intents.findIndex(item => item.value === event.intent);
                 if (dotPaths.length >= 2) {
                     // return generic message for confirmation
+                    
                     const strPath = `intents[${intentIndex}]` + dotPaths[1];
                     const targetNode = lodash(model, strPath);
                 }

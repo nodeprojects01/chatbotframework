@@ -44,7 +44,6 @@
                         "date": "str_01",
                         "time": "str_02"
                     },
-                    "delimiter": "***",
                     "params": {
                         "url": "http://date.jsontest.com/",
                         "method": "post",
