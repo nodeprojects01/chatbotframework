@@ -107,7 +107,7 @@ function getButtonOptions(responseNode, targetNode) {
     // check the format of the options and prepare for response
     // [] - options not required, [*] - add all slot values as options, ["val1", "val2", "val3"] - options pre-defined
     var formattedResponse = [];
-    if (!responseNode.options || responseNode.length == 0) {
+    if (!responseNode.options || responseNode.options.length == 0) {
         return formattedResponse;
     }
 

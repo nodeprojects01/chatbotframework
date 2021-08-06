@@ -5,13 +5,16 @@ const { log } = require("./config/logger");
 const SearchTree = require("./nodes/TraverseNode");
 const ResponseNode = require("./nodes/ResponseNode");
 const lodash = require('lodash.get');
+const { level } = require("winston");
 const filename = __filename.slice(__dirname.length + 1, -3);
 
 const event = {
+    conversationId: "ax1234bernzzz234499",  // can also be identified as session id
+    transactionId: "22344541",
     query: "hello",
     intent: "Drivewise",
     slots: {
-        "TopCategories": "Device",
+        "TopCategories": null,
         "DeviceConcerns": "Replace",
         "OnboardingType": null,
         "State": null,
@@ -42,6 +45,24 @@ function getPathsOfValue(obj, value) {
         }, []);
 }
 
+function nth_occurrence(string, char, nth) {
+    var first_index = string.indexOf(char);
+    var lfi = first_index + 1;
+
+    if (nth == 1) {
+        return first_index;
+    } else {
+        var afo = string.slice(lfi);
+        var next_occurrence = nth_occurrence(afo, char, nth - 1);
+
+        if (next_occurrence === -1) {
+            return -1;
+        } else {
+            return lfi + next_occurrence;
+        }
+    }
+}
+
 async function main(event) {
     try {
         const rootNode = model.intents.filter(o => o.value == event.intent);
@@ -49,7 +70,7 @@ async function main(event) {
             const slots = getSlotValues(event.slots);
             log.info(`${filename} > ${arguments.callee.name}: input event contains ${slots.length} slot values`);
             if (slots.length >= 1) {
-                const st = new SearchTree(rootNode[0])
+                const st = new SearchTree(rootNode[0]);
                 await st.execute(slots);
                 const dotPaths = st.getDotPaths();
                 log.info(`${filename} > ${arguments.callee.name}: identified ${dotPaths.length} paths`);
@@ -58,16 +79,22 @@ async function main(event) {
                 const intentIndex = model.intents.findIndex(item => item.value === event.intent);
                 if (dotPaths.length >= 2) {
                     // return generic message for confirmation
-                    
+                    var levels = [];
+                    const vp = st.getValuePaths();
+                    console.log(vp);
+                    vp.forEach(p => levels.push(p.findIndex(i => Object.values(event.slots).includes(i))));
+                    const minLvl = Math.min(...levels);
                     const strPath = `intents[${intentIndex}]` + dotPaths[1];
-                    const targetNode = lodash(model, strPath);
+                    var ii = nth_occurrence(strPath, '.', minLvl);
+                    const targetNode = lodash(model, strPath.substr(0, ii));
+                    console.log(targetNode.value);
                 }
                 else if (dotPaths.length == 1) {
                     // if it not a leaf node (or response type is close) then return the message 
                     // else ask for next slot options
                     const strPath = `intents[${intentIndex}]` + dotPaths[0];
                     const targetNode = lodash(model, strPath);
-                    return await ResponseNode.reponseFormatter(targetNode).then(res =>{
+                    return await ResponseNode.reponseFormatter(targetNode).then(res => {
                         log.info(`${filename} > ${arguments.callee.name}: response is successfuly formatted`);
                         log.debug(`${filename} > ${arguments.callee.name}: response - ${JSON.stringify(res)}`);
                         return res;

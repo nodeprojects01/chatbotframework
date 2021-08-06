@@ -65,7 +65,15 @@
                     "responseType": "ElicitSlot",
                     "slot": "TechSupportType",
                     "message": "4",
-                    "values": []
+                    "values": [
+                        {
+                            "value": "Replace",
+                            "responseType": "ElicitSlot",
+                            "slot": "State",
+                            "message": "3",
+                            "values": []
+                        }
+                    ]
                 }
             ]
         },

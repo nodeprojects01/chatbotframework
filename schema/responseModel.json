@@ -12,6 +12,13 @@
                     "contentType": "PlainText",
                     "content": "I am watching the Jupiter ring in space, I will be back soon"
                 }
+            ],
+            "confirm": [
+                {
+                    "contentType": "QuickReplies",
+                    "content": "Is your query related to one among the below?",
+                    "options": []
+                }
             ]
         },
         "1": [
