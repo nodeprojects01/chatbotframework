@@ -6,145 +6,73 @@ const { log } = require("../config/logger");
 const { performance } = require('perf_hooks');
 const filename = __filename.slice(__dirname.length + 1, -3);
 
-class PlainText {
-    constructor(message) {
-        this.type = this.constructor.name;
-        this.msg = message;
-    }
-
-    message() {
+function botResponse(obj) {
+    try {
         return {
-            type: this.type,
-            message: this.msg
+            messageType: obj.messageType ? obj.messageType : messageTypes.plainText,
+            message: obj.message ? obj.message : "",
+            options: obj.options ? obj.options : []
         };
+    }
+    catch {
+        log.error(`${filename} > ${arguments.callee.name}: invalid input object`);
+        throw new Error("invalid input object");
     }
 }
 
-class QuickReplies extends PlainText {
-    constructor(message, options) {
-        super(message);
-        this.options = options;
-    }
-
-    message() {
-        return {
-            type: this.type,
-            message: this.msg,
-            options: this.options
-        };
-    }
-}
-
-class Carousel extends QuickReplies {
-    constructor(message, options) {
-        super(message);
-        this.options = options;
-    }
-
-    message() {
-        return {
-            type: this.type,
-            message: this.msg,
-            options: this.options
-        };
-    }
-}
-
-const responseTypes = {
+const messageTypes = {
     plainText: "PlainText",
     quickReplies: "QuickReplies",
     carousel: "Carousel",
+    plainTextByApi: "PlainTextByApi"
 }
 
-const dynamicResponseTypes = {
-    api: "Api",
-    image: "Image",
-    database: "Database"
-}
-
-function responseInstance(type, message, options = []) {
-    try {
-        if (Object.values(responseTypes).includes(type)) {
-            switch (type) {
-                case "PlainText":
-                    return new PlainText(message);
-                case "QuickReplies":
-                    return new QuickReplies(message, options);
-                case "Carousel":
-                    return new Carousel(message, options);
-            }
-        }
-        else {
-            log.error(`${filename} > ${arguments.callee.name}: invalid respose type`);
-            throw new Error("invalid respose type");
-        }
-    }
-    catch (e) {
-        return e;
-    }
-}
-
-async function apiResponse(responseNode, responseType) {
+async function getPlainTextByApi(responseNode, messageType) {
     log.info(`${filename} > ${arguments.callee.name}: calling the RESTNode`);
     var msg = responseNode.content;
-    var formattedResponse = [];
     const rn = new RESTNode(responseNode.ext.params);
     await rn.execute().then(succ => {
         Object.keys(responseNode.ext.replacePaths).forEach(p => {
             const rm = lodash(succ, p);
             msg = msg.replace(responseNode.ext.replacePaths[p], rm);
         });
-        var res = responseInstance(responseType, msg, responseNode.options);
-        formattedResponse.push(res.message());
+        return botResponse({ messageType: messageType, message: msg, options: responseNode.options });
     }).catch(e => {
         log.error(`${filename} > ${arguments.callee.name}: error while fetching api data`);
         throw new Error("error while fetching api data");
     });
-    return formattedResponse;
 }
 
-function getButtonOptions(responseNode, targetNode) {
+function getQuickReplies(responseNode, targetNode) {
     // check the format of the options and prepare for response
-    // [] - options not required, [*] - add all slot values as options, ["val1", "val2", "val3"] - options pre-defined
-    var formattedResponse = [];
-    if (!responseNode.options || responseNode.options.length == 0) {
-        return formattedResponse;
-    }
-
-    if (responseNode.options[0] == "*") {
-        var targetSlots = [];
+    // [] - add all slot values as options, ["val1", "val2", "val3"] - options pre-defined
+    var responseOptions = responseNode.options ? responseNode.options : [];
+    if (responseNode.options && responseNode.options.length === 0) {
         targetNode.values.forEach(o => {
-            targetSlots.push(o.value);
+            responseOptions.push(o.value);
         });
-        var res = responseInstance(responseNode.contentType, responseNode.content, targetSlots);
-        formattedResponse.push(res.message());
     }
-    else {
-        var res = responseInstance(responseNode.contentType, responseNode.content, responseNode.options);
-        formattedResponse.push(res.message());
-    }
-    return formattedResponse;
+    return botResponse({ ...responseNode, options: responseOptions });
 }
 
 async function reponseFormatter(targetNode) {
-    const resp = responseModel.messages[targetNode.message];
+    const msgArr = responseModel.messages[targetNode.message];
     var formattedResponse = [];
-    if (resp && resp.length >= 1) {
+    if (msgArr && msgArr.length >= 1) {
         try {
-            for (const m of resp) {
-                if (m.contentType.indexOf("By") != -1) {
-                    const ty = m.contentType.split("By");
-                    if (ty[1] == dynamicResponseTypes.api) {
-                        // call REST node
-                        var apiResp = await apiResponse(m, ty[0]);
-                        // console.log(apiResp);
-                        formattedResponse = formattedResponse.concat(apiResp);
-                    }
+            for (const m of msgArr) {
+                var resp = "";
+                switch (m.messageType) {
+                    case messageTypes.plainTextByApi:
+                        resp = await getPlainTextByApi(m, m.messageType);
+                        break;
+                    case messageTypes.quickReplies:
+                        resp = getQuickReplies(m, targetNode);
+                        break;
+                    default:
+                        resp = botResponse(m);
                 }
-                var buttonResp = getButtonOptions(m, targetNode);
-                // console.log(buttonResp);
-                formattedResponse = formattedResponse.concat(buttonResp);
-                // }
+                formattedResponse.push(resp);
             }
             return formattedResponse;
         }
@@ -160,4 +88,4 @@ async function reponseFormatter(targetNode) {
     }
 }
 
-module.exports = { responseTypes, reponseFormatter };
+module.exports = { messageTypes, reponseFormatter };

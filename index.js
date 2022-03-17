@@ -17,7 +17,7 @@ const event = {
         "TopCategories": null,
         "DeviceConcerns": "Replace",
         "OnboardingType": null,
-        "State": null,
+        "State": "NY",
         "Address": null
     },
     sessionAttributes: {}
@@ -28,7 +28,6 @@ function getSlotValues(slots) {
     for (const k of Object.keys(slots)) if (slots[k]) availableSlots.push(slots[k]);
     return availableSlots;
 }
-
 
 function getPathsOfValue(obj, value) {
     return Object
@@ -65,6 +64,7 @@ function nth_occurrence(string, char, nth) {
 
 async function main(event) {
     try {
+        var targetNode = "";
         const rootNode = model.intents.filter(o => o.value == event.intent);
         if (rootNode) {
             const slots = getSlotValues(event.slots);
@@ -79,15 +79,29 @@ async function main(event) {
                 const intentIndex = model.intents.findIndex(item => item.value === event.intent);
                 if (dotPaths.length >= 2) {
                     // return generic message for confirmation
-                    var levels = [];
+                    var targetNode = "";
                     const vp = st.getValuePaths();
-                    console.log(vp);
-                    vp.forEach(p => levels.push(p.findIndex(i => Object.values(event.slots).includes(i))));
-                    const minLvl = Math.min(...levels);
-                    const strPath = `intents[${intentIndex}]` + dotPaths[1];
-                    var ii = nth_occurrence(strPath, '.', minLvl);
-                    const targetNode = lodash(model, strPath.substr(0, ii));
-                    console.log(targetNode.value);
+                    // console.log("vp -", vp);
+
+                    vp[0].some((v, i) => {
+                        // console.log(v, " <==> ", vp[1][i])
+                        if (v != vp[1][i]) {
+                            const strPath = `intents[${intentIndex}]` + dotPaths[0];
+                            var ii = nth_occurrence(strPath, '.', i);
+                            targetNode = lodash(model, strPath.substr(0, ii));
+                            // console.log(targetNode.value);
+                            return true;
+                        }
+                    });
+
+                    return await ResponseNode.reponseFormatter(targetNode).then(res => {
+                        log.info(`${filename} > ${arguments.callee.name}: response is successfuly formatted`);
+                        log.debug(`${filename} > ${arguments.callee.name}: response - ${JSON.stringify(res)}`);
+                        return res;
+                    }).catch(e => {
+                        log.error(`${filename} > ${arguments.callee.name}: error while formatting the response ${e}`);
+                        return responseModel.messages.default.error;
+                    });
                 }
                 else if (dotPaths.length == 1) {
                     // if it not a leaf node (or response type is close) then return the message 
@@ -113,7 +127,15 @@ async function main(event) {
             else {
                 // when no slots are available, guide user flow from the root node
                 // return message of the first node
-                return rootNode.message;
+                targetNode = rootNode[0];
+                return await ResponseNode.reponseFormatter(targetNode).then(res => {
+                    log.info(`${filename} > ${arguments.callee.name}: response is successfuly formatted`);
+                    log.debug(`${filename} > ${arguments.callee.name}: response - ${JSON.stringify(res)}`);
+                    return res;
+                }).catch(e => {
+                    log.error(`${filename} > ${arguments.callee.name}: error while formatting the response ${e}`);
+                    return responseModel.messages.default.error;
+                });
             }
         }
         else {
@@ -132,5 +154,6 @@ async function main(event) {
 
 
 main(event).then((res) => {
-    console.log(res);
+    console.log("response =>", res);
+    console.log("process completed");
 });

@@ -6,7 +6,7 @@
             "value": "Drivewise",
             "responseType": "ElicitSlot",
             "slot": "TopCategories",
-            "message": "1",
+            "message": "2",
             "values": [
                 {
                     "value": "Onboarding",
