@@ -17,7 +17,7 @@ const event = {
         "TopCategories": null,
         "DeviceConcerns": "Replace",
         "OnboardingType": null,
-        "State": "NY",
+        "State": "CA",
         "Address": null
     },
     sessionAttributes: {}

@@ -1,0 +1,32 @@
+{
+  "name": "chatbotframework",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "axios-retry": "^3.1.9",
+    "jsonpath": "^1.1.1",
+    "lodash.get": "^4.4.2",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nodeprojects01/chatbotframework.git"
+  },
+  "keywords": [
+    "chatbot",
+    "chatbotframework",
+    "framework"
+  ],
+  "author": "Jinraj K R",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nodeprojects01/chatbotframework/issues"
+  },
+  "homepage": "https://github.com/nodeprojects01/chatbotframework#readme"
+}
