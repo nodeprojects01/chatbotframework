@@ -76,6 +76,21 @@ class SearchTree {
         log.debug(`${filename} > makePath: value path formed - ${path}`);
         log.debug(`${filename} > makePath: dot notation path formed - ${strPath}`);
     }
+
+    getPathsOfValue(obj, value) {
+        return Object
+            .keys(obj)
+            .reduce((r, k) => {
+                var kk = Array.isArray(obj) ? `${k}` : `${k}`;
+                if (obj[k] === value) {
+                    r.push(kk);
+                }
+                if (obj[k] && typeof obj[k] === 'object') {
+                    r.push(...getPathsOfValue(obj[k], value).map(p => kk + (p[0] === '[' ? '' : '.') + p));
+                }
+                return r;
+            }, []);
+    }
 }
 
 
