@@ -3,8 +3,8 @@ const config = require("./config/config");
 const botModel = require("." + config.botModelPath);
 const responseModel = require("." + config.responseModelPath);
 const { log } = require("./config/logger");
-const SearchTree = require("./nodes/TraverseNode");
-const ResponseNode = require("./nodes/ResponseNode");
+const SearchTree = require("./actions/Traverse");
+const ResponseNode = require("./actions/FormatResponse");
 const lodash = require('lodash.get');
 const filename = __filename.slice(__dirname.length + 1, -3);
 

@@ -1,6 +1,6 @@
 const config = require("../config/config");
 const responseModel = require(".." + config.responseModelPath);
-const RESTNode = require("./RESTNode");
+const RESTNode = require("./RESTCall");
 const lodash = require('lodash.get');
 const { log } = require("../config/logger");
 const { performance } = require('perf_hooks');
