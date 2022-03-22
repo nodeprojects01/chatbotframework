@@ -28,7 +28,7 @@ class SearchTree {
         searchElements.forEach(e => {
             this.searchElements[e] = 0;
         });
-        log.silly(`${filename} > execute: tree traversing started to get path of slot values`);
+        log.silly(`${filename} > execute: tree traversing started to get path of entity values`);
         var st = performance.now();
         await this.#traverse(this.data, null);
         var tt = ((performance.now() - st) / 1000).toFixed(2);

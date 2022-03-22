@@ -1,0 +1,101 @@
+{
+    "botName": "PluginDeviceBot",
+    "sessionAttributes": {},
+    "intents": [
+        {
+            "value": "welcome",
+            "responseType": "Close",
+            "entity": null,
+            "message": "1",
+            "values": []
+        },
+        {
+            "value": "business metrics report",
+            "responseType": "AskEntity",
+            "entity": "ReportType",
+            "message": "4",
+            "values": [
+                {
+                    "value": "efile usage metrics",
+                    "responseType": "AskEntity",
+                    "entity": "EfileType",
+                    "message": "5",
+                    "values": [
+                        {
+                            "value": "US eFile",
+                            "responseType": "System.Date",
+                            "entity": "StartDate",
+                            "message": "6",
+                            "values": []
+                        },
+                        {
+                            "value": "Canada eFile",
+                            "responseType": "System.Date",
+                            "entity": "StartDate",
+                            "message": "6",
+                            "values": []
+                        },
+                        {
+                            "value": "Puerto Rico eFile",
+                            "responseType": "System.Date",
+                            "entity": "StartDate",
+                            "message": "6",
+                            "values": [
+                                {
+                                    "value": "dd-MM-yyyy",
+                                    "responseType": "System.Date",
+                                    "entity": "EndDate",
+                                    "message": "7",
+                                    "values": [
+                                        {
+                                            "value": "dd-MM-yyyy",
+                                            "responseType": "Close",
+                                            "entity": null,
+                                            "message": "8",
+                                            "values": []
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "value": "Supply Chain eFile",
+                            "responseType": "System.Date",
+                            "entity": "StartDate",
+                            "message": "6",
+                            "values": []
+                        },
+                        {
+                            "value": "H&W eFile",
+                            "responseType": "System.Date",
+                            "entity": "StartDate",
+                            "message": "6",
+                            "values": []
+                        }
+                    ]
+                },
+                {
+                    "value": "DocType Intgration Report",
+                    "responseType": "Close",
+                    "entity": null,
+                    "message": "3",
+                    "values": []
+                },
+                {
+                    "value": "UPLD & DNLD Report",
+                    "responseType": "Close",
+                    "entity": null,
+                    "message": "3",
+                    "values": []
+                }
+            ]
+        },
+        {
+            "value": "Milewise",
+            "responseType": "AskEntity",
+            "entity": "TopCategories",
+            "message": "5",
+            "values": []
+        }
+    ]
+}

@@ -1,0 +1,240 @@
+{
+    "messages": {
+        "default": {
+            "escalate": [
+                {
+                    "messageType": "PlainText",
+                    "message": "Please wait while I connect you to a live representative"
+                }
+            ],
+            "error": [
+                {
+                    "messageType": "PlainText",
+                    "message": "I am watching the Jupiter ring in space, I will be back soon"
+                }
+            ],
+            "confirm": [
+                {
+                    "messageType": "QuickReplies",
+                    "message": "Is your query related to one among the below?",
+                    "options": []
+                }
+            ]
+        },
+        "1": [
+            {
+                "messageType": "PlainText",
+                "message": "Hi, I am Efia the chatbot assistant, and I can help you with the following queries"
+            },
+            {
+                "messageType": "QuickReplies",
+                "options": [
+                    {
+                        "displayName": "Business Metrics Report",
+                        "actualMessage": "Business Metrics Report"
+                    },
+                    {
+                        "displayName": "How to use DFC?",
+                        "actualMessage": "How to use DFC?"
+                    },
+                    {
+                        "displayName": "Find Document",
+                        "actualMessage": "Find Document"
+                    },
+                    {
+                        "displayName": "Manage Tool Access",
+                        "actualMessage": "Manage Tool Access"
+                    },
+                    {
+                        "displayName": "Others",
+                        "actualMessage": "Others"
+                    }
+                ]
+            }
+        ],
+        "2": [
+            {
+                "messageType": "PlainText",
+                "message": "Hello, how can I help you"
+            }
+        ],
+        "3": [
+            {
+                "messageType": "PlainText",
+                "message": "Sure, I can help you with the following queries, click any one to begin!"
+            },
+            {
+                "messageType": "QuickReplies",
+                "options": [
+                    {
+                        "displayName": "Business Metrics Report",
+                        "actualMessage": "Business Metrics Report"
+                    },
+                    {
+                        "displayName": "How to use DFC?",
+                        "actualMessage": "How to use DFC?"
+                    },
+                    {
+                        "displayName": "Find Document",
+                        "actualMessage": "Find Document"
+                    },
+                    {
+                        "displayName": "Manage Tool Access",
+                        "actualMessage": "Manage Tool Access"
+                    },
+                    {
+                        "displayName": "Others",
+                        "actualMessage": "Others"
+                    }
+                ]
+            }
+        ],
+        "4": [
+            {
+                "messageType": "PlainText",
+                "message": "I found the following reports for you. Please select one to proceed."
+            },
+            {
+                "messageType": "QuickReplies",
+                "options": [
+                    {
+                        "displayName": "DocType Intgration Report",
+                        "actualMessage": "DocType Intgration Report"
+                    },
+                    {
+                        "displayName": "eFile Usage Metrics",
+                        "actualMessage": "eFile Usage Metrics"
+                    },
+                    {
+                        "displayName": "UPLD & DNLD Report",
+                        "actualMessage": "UPLD & DNLD Report"
+                    }
+                ]
+            }
+        ],
+        "5": [
+            {
+                "messageType": "PlainText",
+                "message": "What is the eFile type?"
+            },
+            {
+                "messageType": "QuickReplies",
+                "options": [
+                    {
+                        "displayName": "US eFile",
+                        "actualMessage": "US eFile"
+                    },
+                    {
+                        "displayName": "Canada eFile",
+                        "actualMessage": "Canada eFile"
+                    },
+                    {
+                        "displayName": "Puerto Rico eFile",
+                        "actualMessage": "Puerto Rico eFile"
+                    },
+                    {
+                        "displayName": "Supply Chain eFile",
+                        "actualMessage": "Supply Chain eFile"
+                    },
+                    {
+                        "displayName": "H&W eFile",
+                        "actualMessage": "H&W eFile"
+                    }
+                ]
+            }
+        ],
+        "6": [
+            {
+                "messageType": "PlainText",
+                "message": "Please select the start date"
+            },
+            {
+                "messageType": "Date"
+            }
+        ],
+        "7": [
+            {
+                "messageType": "PlainText",
+                "message": "Please select the end date"
+            },
+            {
+                "messageType": "Date"
+            }
+        ],
+        "8": [
+            {
+                "messageType": "PlainText",
+                "message": "Here is the eFile usage metrics report generated for 1-1-2022 to 31-1-2022"
+            },
+            {
+                "messageType": "HyperLink",
+                "options": [
+                    {
+                        "displayName": "Download the file",
+                        "link": "https://filesamples.com/samples/document/csv/sample4.csv"
+                    }
+                ]
+            }
+        ],
+        "9": [
+            {
+                "messageType": "PlainText",
+                "message": "Click the below link to navigate to eFile user guide"
+            },
+            {
+                "messageType": "HyperLink",
+                "options": [
+                    {
+                        "displayName": "Download the file",
+                        "link": "https://google.com"
+                    }
+                ]
+            }
+        ],
+        "10": [
+            {
+                "messageType": "PlainText",
+                "message": "You can upload the health reports under below category. \n\n Medical > Miscellaneous Medical Document"
+            }
+        ],
+        "11": [
+            {
+                "messageType": "PlainText",
+                "message": "Here is how you can find payroll documents of an associate"
+            },
+            {
+                "messageType": "MultiLine",
+                "options": [
+                    "Go to eFile Homepage",
+                    "Enter the userid or username in the textbot and hit search",
+                    "Click on Payroll folder from the left panel"
+                ]
+            }
+        ],
+        "api": [
+            {
+                "messageType": "PlainTextByApi",
+                "message": "Your device would be delivered by str_01 str_02",
+                "ext": {
+                    "replacePaths": {
+                        "date": "str_01",
+                        "time": "str_02"
+                    },
+                    "params": {
+                        "url": "http://date.jsontest.com/",
+                        "method": "post",
+                        "headers": {},
+                        "body": {},
+                        "authentication": {}
+                    },
+                    "parserConditions": {}
+                }
+            },
+            {
+                "messageType": "QuickReplies",
+                "message": "Please confirm your location?",
+                "options": []
+            }
+        ]
+    }
+}

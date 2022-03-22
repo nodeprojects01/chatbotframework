@@ -3,47 +3,54 @@
     "sessionAttributes": {},
     "intents": [
         {
+            "value": "Welcome",
+            "responseType": "AskEntity",
+            "entity": "TopCategories",
+            "message": "2",
+            "values": []
+        },
+        {
             "value": "Drivewise",
-            "responseType": "ElicitSlot",
-            "slot": "TopCategories",
+            "responseType": "AskEntity",
+            "entity": "TopCategories",
             "message": "2",
             "values": [
                 {
                     "value": "Onboarding",
                     "responseType": "Close",
-                    "slot": null,
+                    "entity": null,
                     "message": "3",
                     "values": []
                 },
                 {
                     "value": "Device",
-                    "responseType": "ElicitSlot",
-                    "slot": "DeviceConcerns",
+                    "responseType": "AskEntity",
+                    "entity": "DeviceConcerns",
                     "message": "2",
                     "values": [
                         {
                             "value": "Replace",
-                            "responseType": "ElicitSlot",
-                            "slot": "State",
+                            "responseType": "AskEntity",
+                            "entity": "State",
                             "message": "3",
                             "values": [
                                 {
                                     "value": "NY",
                                     "responseType": "Close",
-                                    "slot": null,
+                                    "entity": null,
                                     "message": "2",
                                     "values": []
                                 },
                                 {
                                     "value": "CA",
-                                    "responseType": "ElicitSlot",
-                                    "slot": "Address",
+                                    "responseType": "AskEntity",
+                                    "entity": "Address",
                                     "message": "2",
                                     "values": [
                                         {
                                             "value": "ChurchStreet",
                                             "responseType": "Close",
-                                            "slot": null,
+                                            "entity": null,
                                             "message": "1",
                                             "values": []
                                         }
@@ -54,7 +61,7 @@
                         {
                             "value": "Return",
                             "responseType": "Close",
-                            "slot": null,
+                            "entity": null,
                             "message": "3",
                             "values": []
                         }
@@ -62,14 +69,14 @@
                 },
                 {
                     "value": "TechSupport",
-                    "responseType": "ElicitSlot",
-                    "slot": "TechSupportType",
+                    "responseType": "AskEntity",
+                    "entity": "TechSupportType",
                     "message": "4",
                     "values": [
                         {
                             "value": "Replace",
-                            "responseType": "ElicitSlot",
-                            "slot": "State",
+                            "responseType": "AskEntity",
+                            "entity": "State",
                             "message": "3",
                             "values": []
                         }
@@ -79,8 +86,8 @@
         },
         {
             "value": "Milewise",
-            "responseType": "ElicitSlot",
-            "slot": "TopCategories",
+            "responseType": "AskEntity",
+            "entity": "TopCategories",
             "message": "5",
             "values": []
         }

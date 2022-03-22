@@ -45,4 +45,27 @@ app.post("/getQueryResponse", async (req, res) => {
 
 app.listen(port, () => {
     log.info(`framework is listening to port: ${port}`);
-})
+});
+
+// ================= For testing ========================
+
+const event = {
+    conversationId: "ax1234bernzzz234499",  // can also be identified as session id
+    transactionId: "22344541",
+    query: "hello",
+    intent: "business metrics report",
+    entities: {
+        "ReportType": null,
+        "EfileType": "Puerto Rico eFile",
+        "StartDate": null,
+        "EndDate": null
+    },
+    sessionAttributes: {}
+}
+
+// runProcessSteps(event).then((res) => {
+//     console.log("response =>", res);
+//     console.log("process completed");
+// });
+
+// ================= For testing ========================

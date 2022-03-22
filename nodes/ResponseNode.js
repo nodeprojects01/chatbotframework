@@ -1,6 +1,6 @@
-
+const config = require("../config/config");
+const responseModel = require(".." + config.responseModelPath);
 const RESTNode = require("./RESTNode");
-const responseModel = require("../schema/responseModel.json");
 const lodash = require('lodash.get');
 const { log } = require("../config/logger");
 const { performance } = require('perf_hooks');
@@ -23,6 +23,9 @@ function botResponse(obj) {
 const messageTypes = {
     plainText: "PlainText",
     quickReplies: "QuickReplies",
+    date: "Date",
+    hyperLink: "HyperLink",
+    multiLine: "MultiLine",
     carousel: "Carousel",
     plainTextByApi: "PlainTextByApi"
 }
@@ -45,7 +48,7 @@ async function getPlainTextByApi(responseNode, messageType) {
 
 function getQuickReplies(responseNode, targetNode) {
     // check the format of the options and prepare for response
-    // [] - add all slot values as options, ["val1", "val2", "val3"] - options pre-defined
+    // [] - add all entity values as options, ["val1", "val2", "val3"] - options pre-defined
     var responseOptions = responseNode.options ? responseNode.options : [];
     if (responseNode.options && responseNode.options.length === 0) {
         targetNode.values.forEach(o => {
@@ -67,7 +70,7 @@ async function reponseFormatter(targetNode) {
                         resp = await getPlainTextByApi(m, m.messageType);
                         break;
                     case messageTypes.quickReplies:
-                        resp = getQuickReplies(m, targetNode);
+                        resp = await getQuickReplies(m, targetNode);
                         break;
                     default:
                         resp = botResponse(m);
