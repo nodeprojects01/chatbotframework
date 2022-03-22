@@ -10,7 +10,7 @@ class SearchTree {
             throw new Error("invalide JSON input");
 
         this.data = data;
-        this.searchElements = {};
+        this.entitiesToSearch = {};
         this.valuePaths = [];
         this.stack = [];
         this.dotPaths = [];
@@ -24,9 +24,9 @@ class SearchTree {
         return this.dotPaths;
     }
 
-    async execute(searchElements) {
-        searchElements.forEach(e => {
-            this.searchElements[e] = 0;
+    async execute(entitiesToSearch) {
+        entitiesToSearch.forEach(e => {
+            this.entitiesToSearch[e] = 0;
         });
         log.silly(`${filename} > execute: tree traversing started to get path of entity values`);
         var st = performance.now();
@@ -37,24 +37,24 @@ class SearchTree {
     }
 
     #traverse(node, index) {
-        log.debug(`${filename} > traverse: `)
+        log.debug(`${filename} > traverse: `);
         log.debug(`${filename} > traverse: current stack values - ${this.stack}`);
         this.stack.push(node.value + '_' + index);
         log.debug(`${filename} > traverse: pushed value to stack - ${node.value}`);
 
-        if (Object.keys(this.searchElements).includes(node.value)) {
-            this.searchElements[node.value] += 1
-            if (!Object.values(this.searchElements).includes(0)) {
+        if (Object.keys(this.entitiesToSearch).includes(node.value)) {
+            this.entitiesToSearch[node.value] += 1
+            if (!Object.values(this.entitiesToSearch).includes(0)) {
                 log.info(`${filename} > traverse: path found`);
                 this.makePath();
             }
         }
 
-        log.debug(`${filename} > traverse: searchElements - ${JSON.stringify(this.searchElements)}`);
+        log.debug(`${filename} > traverse: entitiesToSearch - ${JSON.stringify(this.entitiesToSearch)}`);
         node.values.forEach((e, i) => {
             this.#traverse(e, i);
-            if (Object.keys(this.searchElements).includes(e.value)) {
-                this.searchElements[e.value] -= 1
+            if (Object.keys(this.entitiesToSearch).includes(e.value)) {
+                this.entitiesToSearch[e.value] -= 1
             }
             this.stack.pop();
             log.debug(`${filename} > traverse: popped value from stack - ${this.stack[this.stack.length - 1]}`);

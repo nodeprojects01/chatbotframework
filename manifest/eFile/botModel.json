@@ -23,27 +23,27 @@
                     "values": [
                         {
                             "value": "US eFile",
-                            "responseType": "System.Date",
+                            "responseType": "AskEntity",
                             "entity": "StartDate",
                             "message": "6",
                             "values": []
                         },
                         {
                             "value": "Canada eFile",
-                            "responseType": "System.Date",
+                            "responseType": "AskEntity",
                             "entity": "StartDate",
                             "message": "6",
                             "values": []
                         },
                         {
                             "value": "Puerto Rico eFile",
-                            "responseType": "System.Date",
+                            "responseType": "AskEntity",
                             "entity": "StartDate",
                             "message": "6",
                             "values": [
                                 {
                                     "value": "dd-MM-yyyy",
-                                    "responseType": "System.Date",
+                                    "responseType": "AskEntity",
                                     "entity": "EndDate",
                                     "message": "7",
                                     "values": [
@@ -60,14 +60,14 @@
                         },
                         {
                             "value": "Supply Chain eFile",
-                            "responseType": "System.Date",
+                            "responseType": "AskEntity",
                             "entity": "StartDate",
                             "message": "6",
                             "values": []
                         },
                         {
                             "value": "H&W eFile",
-                            "responseType": "System.Date",
+                            "responseType": "AskEntity",
                             "entity": "StartDate",
                             "message": "6",
                             "values": []
@@ -89,13 +89,6 @@
                     "values": []
                 }
             ]
-        },
-        {
-            "value": "Milewise",
-            "responseType": "AskEntity",
-            "entity": "TopCategories",
-            "message": "5",
-            "values": []
         }
     ]
 }
