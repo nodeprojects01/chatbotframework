@@ -8,20 +8,6 @@ const lodash = require('lodash.get');
 const { level } = require("winston");
 const filename = __filename.slice(__dirname.length + 1, -3);
 
-const event = {
-    conversationId: "ax1234bernzzz234499",  // can also be identified as session id
-    transactionId: "22344541",
-    query: "hello",
-    intent: "Drivewise",
-    slots: {
-        "TopCategories": null,
-        "DeviceConcerns": "Replace",
-        "OnboardingType": null,
-        "State": "CA",
-        "Address": null
-    },
-    sessionAttributes: {}
-}
 
 function getSlotValues(slots) {
     var availableSlots = [];
@@ -62,7 +48,7 @@ function nth_occurrence(string, char, nth) {
     }
 }
 
-async function main(event) {
+async function runProcessSteps(event) {
     try {
         var targetNode = "";
         const rootNode = model.intents.filter(o => o.value == event.intent);
@@ -146,14 +132,33 @@ async function main(event) {
         }
     }
     catch (e) {
-        console.log(e)
         log.error(`${filename} > ${arguments.callee.name}: something went wrong - ${e}`);
         return e
     }
 }
 
+module.exports = runProcessSteps;
 
-main(event).then((res) => {
-    console.log("response =>", res);
-    console.log("process completed");
-});
+// ================= For testing ========================
+
+const event = {
+    conversationId: "ax1234bernzzz234499",  // can also be identified as session id
+    transactionId: "22344541",
+    query: "hello",
+    intent: "Drivewise",
+    slots: {
+        "TopCategories": null,
+        "DeviceConcerns": "Replace",
+        "OnboardingType": null,
+        "State": "CA",
+        "Address": null
+    },
+    sessionAttributes: {}
+}
+
+// runProcessSteps(event).then((res) => {
+//     console.log("response =>", res);
+//     console.log("process completed");
+// });
+
+// ================= For testing ========================
