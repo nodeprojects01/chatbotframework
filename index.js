@@ -1,74 +1,61 @@
 
 const config = require("./config/config");
-const botModel = require("." + config.botModelPath);
-const responseModel = require("." + config.responseModelPath);
 const { log } = require("./config/logger");
-const searchThroughTree = require("./components/dataRetriever/searchTree");
-const ResponseNode = require("./actions/FormatResponse");
 const filename = __filename.slice(__dirname.length + 1, -3);
+const { getUserInput } = require("./components/queryReader/getQueryPayload");
+const { createNlpPayload } = require("./components/nlpAccess/createNlpPayload");
+const { callNLPEngine, formatNlpResponse } = require("./components/nlpAccess/callNLPEngine");
+const { searchResponseTree } = require("./components/dataRetriever/searchTree");
+const { resolveResponseFormats } = require("./components/dataRetriever/resolveResponseFormats");
+const { prepareBotResponse } = require("./components/dataRetriever/prepareBotResponse");
+const { saveConversation } = require("./components/conversationStorage/saveConversation");
 
 
-function getEntityValues(entities) {
-    var availableEntities = [];
-    for (const k of Object.keys(entities)) if (entities[k]) availableEntities.push(entities[k]);
-    return availableEntities;
+// getUserInput - get user utterance
+// createNlpPayload - format to NLP input template with user input details
+// callNLPEngine - call nlp and get event object
+// formatNlpResponse - get intent and entities
+// searchResponseTree - traverse through response model to get response object
+// resolveResponseFormats - get messages object from response model and unzip response formats
+// saveConversation - store conversation to database
+// translateToUIData - translate response object to chatbot ui format
+const steps = {
+    getUserInput: "getUserInput",
+    createNlpPayload: "createNlpPayload",
+    callNLPEngine: "callNLPEngine",
+    formatNlpResponse: "formatNlpResponse",
+    searchResponseTree: "searchResponseTree",
+    resolveResponseFormats: "resolveResponseFormats",
+    prepareBotResponse: "prepareBotResponse",
+    saveConversation: "saveConversation",
+    translateToUIData: "translateToUIData"
 }
 
 
-async function runProcessSteps(event) {
-    try {
-        var targetNode = "";
-        const rootNode = botModel.intents.filter(o => o.value == event.intent);
-        const intentIndex = botModel.intents.findIndex(item => item.value === event.intent);
-        if (!rootNode) {
-            // return exception message
-            // bot model must have invalid values that are not matching the bot's entity values
-            log.error(`${filename} > ${arguments.callee.name}: bot model must have invalid intent name that is not matching the bot's intent`);
-            return responseModel.messages.default.error;
-        }
-        else {
-            const entities = getEntityValues(event.entities);
-            log.info(`${filename} > ${arguments.callee.name}: input event contains ${entities.length} entity values`);
-
-            if (entities.length === 0) {
-                // when no entities are available, guide user flow from the root node
-                // return message of the first node
-                targetNode = rootNode[0];
-                return await ResponseNode.reponseFormatter(targetNode).then(res => {
-                    log.info(`${filename} > ${arguments.callee.name}: response is successfuly formatted`);
-                    log.debug(`${filename} > ${arguments.callee.name}: response - ${JSON.stringify(res)}`);
-                    return res;
-                }).catch(e => {
-                    log.error(`${filename} > ${arguments.callee.name}: error while formatting the response ${e}`);
-                    return responseModel.messages.default.error;
-                });
-            }
-            else {
-                const targetNode = await searchThroughTree(intentIndex, rootNode, entities);
-
-                if (targetNode.value) {
-                    return await ResponseNode.reponseFormatter(targetNode).then(res => {
-                        log.info(`${filename} > ${arguments.callee.name}: response is successfuly formatted`);
-                        log.debug(`${filename} > ${arguments.callee.name}: response - ${JSON.stringify(res)}`);
-                        return res;
-                    }).catch(e => {
-                        log.error(`${filename} > ${arguments.callee.name}: error while formatting the response ${e}`);
-                        return responseModel.messages.default.error;
-                    });
-                }
-                else {
-                    // return exception message
-                    // bot model must have invalid values that are not matching the bot's entity values
-                    log.error(`${filename} > ${arguments.callee.name}: bot model must have invalid values that are not matching the bot's entity values`);
-                    return responseModel.messages.default.error;
-                }
-            }
-        }
-    }
-    catch (e) {
-        log.error(`${filename} > ${arguments.callee.name}: something went wrong - ${e}`);
-        return e
+async function getStep(step, obj) {
+    switch (step) {
+        case steps.getUserInput: return getUserInput(obj)
+        case steps.createNlpPayload: return await createNlpPayload(obj)
+        case steps.callNLPEngine: return await callNLPEngine(obj)
+        case steps.formatNlpResponse: return await formatNlpResponse(obj)
+        case steps.searchResponseTree: return await searchResponseTree(obj)
+        case steps.resolveResponseFormats: return await resolveResponseFormats(obj)
+        case steps.prepareBotResponse: return await prepareBotResponse(obj)
+        case steps.saveConversation: return await saveConversation(obj)
+        case steps.translateToUIData: return await translateToUIData(obj)
     }
 }
 
-module.exports = runProcessSteps;
+
+async function executeSteps(userInput) {
+    var funInput = userInput;
+    for (const step of Object.values(steps)) {
+        log.debug(`executing step - ${step}, with input value ${funInput}`);
+        funInput = await getStep(step, funInput);
+    };
+}
+
+
+
+
+module.exports = executeSteps;

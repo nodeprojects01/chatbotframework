@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const filename = __filename.slice(__dirname.length + 1);
-const runProcessSteps = require("./index.js");
+const executeSteps = require("./index.js");
 
 
 function xssFilter(obj) {
@@ -29,7 +29,7 @@ app.post("/getQueryResponse", async (req, res) => {
     try {
         log.info(`${filename} > getQueryResponse`);
         const eventObj = req.body;
-        runProcessSteps(eventObj).then((resp) => {
+        executeSteps({ query: "hi" }).then((resp) => {
             log.info(`${filename} > getQueryResponse - process completed`);
             res.send(xssFilter({ statusCode: 200, data: resp }));
         }).catch(e => {
@@ -43,29 +43,16 @@ app.post("/getQueryResponse", async (req, res) => {
 });
 
 
-app.listen(port, () => {
-    log.info(`framework is listening to port: ${port}`);
-});
+// app.listen(port, () => {
+//     log.info(`framework is listening to port: ${port}`);
+// });
 
 // ================= For testing ========================
 
-const event = {
-    conversationId: "ax1234bernzzz234499",  // can also be identified as session id
-    transactionId: "22344541",
-    query: "hello",
-    intent: "business metrics report",
-    entities: {
-        "ReportType": null,
-        "EfileType": "Puerto Rico eFile",
-        "StartDate": null,
-        "EndDate": null
-    },
-    sessionAttributes: {}
-}
 
-// runProcessSteps(event).then((res) => {
-//     console.log("response =>", res);
-//     console.log("process completed");
-// });
+executeSteps({ query: "hi" }).then((res) => {
+    console.log("response =>", res);
+    console.log("process completed");
+});
 
 // ================= For testing ========================

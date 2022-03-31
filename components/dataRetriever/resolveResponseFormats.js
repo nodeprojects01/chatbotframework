@@ -1,24 +1,10 @@
-const config = require("../config/config");
-const responseModel = require(".." + config.responseModelPath);
-const RESTNode = require("./RESTCall");
+const config = require("../../config/config");
+const responseModel = require("../.." + config.responseModelPath);
+const RESTNode = require("../../actions/RESTCall");
 const lodash = require('lodash.get');
-const { log } = require("../config/logger");
+const { log } = require("../../config/logger");
 const { performance } = require('perf_hooks');
 const filename = __filename.slice(__dirname.length + 1, -3);
-
-function botResponse(obj) {
-    try {
-        return {
-            messageType: obj.messageType ? obj.messageType : messageTypes.plainText,
-            message: obj.message ? obj.message : "",
-            options: obj.options ? obj.options : []
-        };
-    }
-    catch {
-        log.error(`${filename} > ${arguments.callee.name}: invalid input object`);
-        throw new Error("invalid input object");
-    }
-}
 
 const messageTypes = {
     plainText: "PlainText",
@@ -30,16 +16,16 @@ const messageTypes = {
     plainTextByApi: "PlainTextByApi"
 }
 
-async function getPlainTextByApi(responseNode, messageType) {
+async function getPlainTextByApi(responseNode) {
     log.info(`${filename} > ${arguments.callee.name}: calling the RESTNode`);
-    var msg = responseNode.content;
+    var msg = responseNode.message;
     const rn = new RESTNode(responseNode.ext.params);
     await rn.execute().then(succ => {
         Object.keys(responseNode.ext.replacePaths).forEach(p => {
             const rm = lodash(succ, p);
             msg = msg.replace(responseNode.ext.replacePaths[p], rm);
         });
-        return botResponse({ messageType: messageType, message: msg, options: responseNode.options });
+        return { ...responseNode, message: msg };
     }).catch(e => {
         log.error(`${filename} > ${arguments.callee.name}: error while fetching api data`);
         throw new Error("error while fetching api data");
@@ -52,10 +38,13 @@ function getQuickReplies(responseNode, targetNode) {
     var responseOptions = responseNode.options ? responseNode.options : [];
     if (responseNode.options && responseNode.options.length === 0) {
         targetNode.values.forEach(o => {
-            responseOptions.push(o.value);
+            responseOptions.push({
+                "displayName": o.value,
+                "actualMessage": o.value
+            });
         });
     }
-    return botResponse({ ...responseNode, options: responseOptions });
+    return { ...responseNode, options: responseOptions };
 }
 
 async function reponseFormatter(targetNode) {
@@ -67,17 +56,19 @@ async function reponseFormatter(targetNode) {
                 var resp = "";
                 switch (m.messageType) {
                     case messageTypes.plainTextByApi:
-                        resp = await getPlainTextByApi(m, m.messageType);
+                        resp = await getPlainTextByApi(m);
                         break;
                     case messageTypes.quickReplies:
                         resp = await getQuickReplies(m, targetNode);
                         break;
+                    case messageTypes.plainText:
                     default:
-                        resp = botResponse(m);
+                        resp = m;
                 }
-                formattedResponse.push(resp);
+                formattedResponse.push(botResp);
             }
-            return formattedResponse;
+            targetNode.message = formattedResponse;
+            return targetNode;
         }
         catch (e) {
             console.log(e);
@@ -91,4 +82,24 @@ async function reponseFormatter(targetNode) {
     }
 }
 
-module.exports = { messageTypes, reponseFormatter };
+async function resolveResponseFormats(responseNode) {
+    if (responseNode.value) {
+        return await reponseFormatter(responseNode).then(res => {
+            log.info(`${filename} > ${arguments.callee.name}: response is successfuly formatted`);
+            log.debug(`${filename} > ${arguments.callee.name}: response - ${JSON.stringify(res)}`);
+            return res;
+        }).catch(e => {
+            log.error(`${filename} > ${arguments.callee.name}: error while formatting the response ${e}`);
+            return responseModel.messages.default.error;
+        });
+    }
+    else {
+        // return exception message
+        // bot model must have invalid values that are not matching the bot's entity values
+        log.error(`${filename} > ${arguments.callee.name}: bot model must have invalid values that are not matching the bot's entity values`);
+        return responseModel.messages.default.error;
+    }
+}
+
+
+module.exports = { resolveResponseFormats }

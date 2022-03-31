@@ -1,7 +1,7 @@
 
-const { log } = require("../config/logger");
+const { log } = require("../../config/logger");
 const { performance } = require('perf_hooks');
-const { isJSON } = require('../utils/helper');
+const { isJSON } = require('../../utils/helper');
 const filename = __filename.slice(__dirname.length + 1, -3);
 
 class SearchTree {
