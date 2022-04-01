@@ -34,7 +34,7 @@ async function runProcessSteps(event) {
                 // when no entities are available, guide user flow from the root node
                 // return message of the first node
                 targetNode = rootNode[0];
-                return await ResponseNode.reponseFormatter(targetNode).then(res => {
+                return await ResponseNode.reponseFormatter(targetNode,event.entities).then(res => {
                     log.info(`${filename} > ${arguments.callee.name}: response is successfuly formatted`);
                     log.debug(`${filename} > ${arguments.callee.name}: response - ${JSON.stringify(res)}`);
                     return res;
@@ -44,10 +44,10 @@ async function runProcessSteps(event) {
                 });
             }
             else {
-                const targetNode = await searchThroughTree(intentIndex, rootNode, entities);
+                const targetNode = await searchThroughTree(intentIndex, rootNode,event.entities);
 
                 if (targetNode.value) {
-                    return await ResponseNode.reponseFormatter(targetNode).then(res => {
+                    return await ResponseNode.reponseFormatter(targetNode,event.entities).then(res => {
                         log.info(`${filename} > ${arguments.callee.name}: response is successfuly formatted`);
                         log.debug(`${filename} > ${arguments.callee.name}: response - ${JSON.stringify(res)}`);
                         return res;

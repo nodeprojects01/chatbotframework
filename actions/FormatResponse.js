@@ -27,7 +27,8 @@ const messageTypes = {
     hyperLink: "HyperLink",
     multiLine: "MultiLine",
     carousel: "Carousel",
-    plainTextByApi: "PlainTextByApi"
+    plainTextByApi: "PlainTextByApi",
+    plainTextByEntities: "PlainTextByEntities"
 }
 
 async function getPlainTextByApi(responseNode, messageType) {
@@ -45,7 +46,14 @@ async function getPlainTextByApi(responseNode, messageType) {
         throw new Error("error while fetching api data");
     });
 }
+async function getPlainTextByEntities(responseNode,entities,messageType){
+    var msg = responseNode.message;
+    Object.keys(responseNode.replaceCondition.replacePaths).forEach(p => {
+        msg = msg.replace(p, entities[responseNode.replaceCondition.replacePaths[p]]);
+    });
+    return botResponse({ messageType: messageType, message: msg, options: responseNode.options });
 
+}
 function getQuickReplies(responseNode, targetNode) {
     // check the format of the options and prepare for response
     // [] - add all entity values as options, ["val1", "val2", "val3"] - options pre-defined
@@ -58,7 +66,7 @@ function getQuickReplies(responseNode, targetNode) {
     return botResponse({ ...responseNode, options: responseOptions });
 }
 
-async function reponseFormatter(targetNode) {
+async function reponseFormatter(targetNode,entities) {
     const msgArr = responseModel.messages[targetNode.message];
     var formattedResponse = [];
     if (msgArr && msgArr.length >= 1) {
@@ -68,6 +76,9 @@ async function reponseFormatter(targetNode) {
                 switch (m.messageType) {
                     case messageTypes.plainTextByApi:
                         resp = await getPlainTextByApi(m, m.messageType);
+                        break;
+                    case messageTypes.plainTextByEntities:
+                        resp = await getPlainTextByEntities(m,entities, m.messageType);
                         break;
                     case messageTypes.quickReplies:
                         resp = await getQuickReplies(m, targetNode);

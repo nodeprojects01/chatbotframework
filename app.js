@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const filename = __filename.slice(__dirname.length + 1);
 const runProcessSteps = require("./index.js");
-
+const moment = require('moment');
 
 function xssFilter(obj) {
     if (!obj) return null;
@@ -43,9 +43,9 @@ app.post("/getQueryResponse", async (req, res) => {
 });
 
 
-app.listen(port, () => {
-    log.info(`framework is listening to port: ${port}`);
-});
+// app.listen(port, () => {
+//     log.info(`framework is listening to port: ${port}`);
+// });
 
 // ================= For testing ========================
 
@@ -57,15 +57,17 @@ const event = {
     entities: {
         "ReportType": null,
         "EfileType": "Puerto Rico eFile",
-        "StartDate": null,
-        "EndDate": null
+        "StartDate":null,
+        "EndDate":"11/12/2020",
     },
     sessionAttributes: {}
 }
 
-// runProcessSteps(event).then((res) => {
-//     console.log("response =>", res);
-//     console.log("process completed");
-// });
+runProcessSteps(event).then((res) => {
+    console.log("response =>", res);
+    console.log("process completed");
+});
 
 // ================= For testing ========================
+
+

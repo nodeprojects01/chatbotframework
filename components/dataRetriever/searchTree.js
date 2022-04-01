@@ -25,19 +25,39 @@ function nth_occurrence(string, char, nth) {
         }
     }
 }
-
+function isRequired(isReqPaths,dotPaths) {
+    var ind= isReqPaths.indexOf('1')
+    if(ind>-1){
+        var newdotPath='';
+        dotPaths.split('.').map((d,i)=>{
+            if(ind>i && i!=0){
+                newdotPath=newdotPath+'.'+d
+            }
+            }
+        )
+        return newdotPath;
+        
+    }
+    else{
+        return dotPaths;
+    }
+}
 async function searchThroughTree(intentIndex, rootNode, entities) {
     try {
-        const st = new SearchTree(rootNode[0]);
-        await st.execute(entities);
+        const st = new SearchTree(rootNode[0],entities);
+        await st.execute();
         const dotPaths = st.getDotPaths();
+        const isReqPaths = st.getRequiredPaths();
+
         log.info(`${filename} > ${arguments.callee.name}: identified ${dotPaths.length} paths`);
         log.debug(`${filename} > ${arguments.callee.name}: paths - ${dotPaths}`);
 
         if (dotPaths.length === 1) {
             // if it not a leaf node (or response type is close) then return the message 
             // else ask for next entity options
-            const strPath = `intents[${intentIndex}]` + dotPaths[0];
+            var path= isRequired(isReqPaths[0],dotPaths[0])
+
+            const strPath = `intents[${intentIndex}]` + path;
             const targetNode = lodash(botModel, strPath);
             return targetNode;
         }
@@ -45,10 +65,10 @@ async function searchThroughTree(intentIndex, rootNode, entities) {
             // return generic message for confirmation
             var targetNode = "";
             const vp = st.getValuePaths();
-
             vp[0].some((v, i) => {
                 if (v != vp[1][i]) {
-                    const strPath = `intents[${intentIndex}]` + dotPaths[0];
+                    var path= isRequired(isReqPaths[0],dotPaths[0])
+                    const strPath = `intents[${intentIndex}]` +path;
                     var ii = nth_occurrence(strPath, '.', i);
                     targetNode = lodash(botModel, strPath.substr(0, ii));
                     // console.log(targetNode.value);
