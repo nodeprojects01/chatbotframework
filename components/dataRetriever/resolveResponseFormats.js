@@ -78,7 +78,7 @@ async function reponseFormatter(targetNode, nlpEvent) {
                     default:
                         resp = m;
                 }
-                formattedResponse.push(botResp);
+                formattedResponse.push(resp);
             }
             targetNode.message = formattedResponse;
             return targetNode;

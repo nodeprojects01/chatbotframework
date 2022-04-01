@@ -34,8 +34,8 @@ function formatNlpResponse(nlpResponse) {
         entities: {
             "ReportType": null,
             "EfileType": "Puerto Rico eFile",
-            "StartDate": null,
-            "EndDate": "25-03-2022"
+            "StartDate": "10-12-2020",
+            "EndDate": "11/12/2020"
         },
         sessionAttributes: {}
     }

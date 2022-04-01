@@ -10,12 +10,14 @@
     "express": "^4.17.2",
     "jsonpath": "^1.1.1",
     "lodash.get": "^4.4.2",
+    "moment": "^2.29.1",
     "winston": "^3.3.3",
     "xss-filters": "^1.2.7"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
