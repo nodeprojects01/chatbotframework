@@ -26,6 +26,23 @@ function nth_occurrence(string, char, nth) {
     }
 }
 
+function isRequired(isReqPaths, dotPaths) {
+    var ind = isReqPaths.indexOf('1')
+    if (ind > -1) {
+        var newdotPath = '';
+        dotPaths.split('.').map((d, i) => {
+            if (ind > i && i != 0) {
+                newdotPath = newdotPath + '.' + d
+            }
+        }
+        )
+        return newdotPath;
+
+    }
+    else {
+        return dotPaths;
+    }
+}
 
 /**
  * The function traverse through response model to get response object
@@ -44,16 +61,10 @@ async function searchResponseTree(nlpEvent) {
             return responseModel.messages.default.error;
         }
         else {
-            var availableEntities = [];
-            for (const k of Object.keys(nlpEvent.entities))
-                if (nlpEvent.entities[k]) availableEntities.push(nlpEvent.entities[k]);
-
-            log.info(`${filename} > ${arguments.callee.name}: input nlpEvent contains ${availableEntities.length} entity values`);
-
             // when no entities are available, guide user flow from the root node
             // return message of the first node
-            targetNode = (availableEntities.length === 0) ? rootNode[0] : await searchThroughTree(intentIndex, rootNode, availableEntities);
-            return targetNode;
+            targetNode = (availableEntities.length === 0) ? rootNode[0] : await searchThroughTree(intentIndex, rootNode, nlpEvent.entities);
+            return { nlpEvent, targetNode };
         }
     }
     catch (e) {
@@ -64,16 +75,22 @@ async function searchResponseTree(nlpEvent) {
 
 async function searchThroughTree(intentIndex, rootNode, entities) {
     try {
-        const st = new SearchTree(rootNode[0]);
-        await st.execute(entities);
+        const st = new SearchTree(rootNode[0], entities);
+        await st.execute();
         const dotPaths = st.getDotPaths();
+
+
         log.info(`${filename} > ${arguments.callee.name}: identified ${dotPaths.length} paths`);
         log.debug(`${filename} > ${arguments.callee.name}: paths - ${dotPaths}`);
 
         if (dotPaths.length === 1) {
             // if it not a leaf node (or response type is close) then return the message 
             // else ask for next entity options
-            const strPath = `intents[${intentIndex}]` + dotPaths[0];
+            // var path = isRequired(isReqPaths[0], dotPaths[0]);
+
+
+
+            const strPath = `intents[${intentIndex}]` + path;
             const targetNode = lodash(botModel, strPath);
             return targetNode;
         }
@@ -81,16 +98,24 @@ async function searchThroughTree(intentIndex, rootNode, entities) {
             // return generic message for confirmation
             var targetNode = "";
             const vp = st.getValuePaths();
-
             vp[0].some((v, i) => {
                 if (v != vp[1][i]) {
-                    const strPath = `intents[${intentIndex}]` + dotPaths[0];
+                    var path = isRequired(isReqPaths[0], dotPaths[0])
+                    const strPath = `intents[${intentIndex}]` + path;
                     var ii = nth_occurrence(strPath, '.', i);
                     targetNode = lodash(botModel, strPath.substr(0, ii));
                     // console.log(targetNode.value);
                     return true;
                 }
             });
+
+            // if any node in the dot paths is mandatory/required and it's entity value is null, then
+            // return that node
+            st.checkRequiredNodeinDotPath()
+            const path = st.getDotPaths();
+
+            const strPath = `intents[${intentIndex}]` + path;
+            targetNode = lodash(botModel, strPath.substr(0, ii));
 
             return targetNode;
         }

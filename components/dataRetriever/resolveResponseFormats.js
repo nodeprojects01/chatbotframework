@@ -13,7 +13,8 @@ const messageTypes = {
     hyperLink: "HyperLink",
     multiLine: "MultiLine",
     carousel: "Carousel",
-    plainTextByApi: "PlainTextByApi"
+    plainTextByApi: "PlainTextByApi",
+    plainTextByEntities: "PlainTextByEntities"
 }
 
 async function getPlainTextByApi(responseNode) {
@@ -47,7 +48,16 @@ function getQuickReplies(responseNode, targetNode) {
     return { ...responseNode, options: responseOptions };
 }
 
-async function reponseFormatter(targetNode) {
+async function getPlainTextByEntities(responseNode, entities) {
+    var msg = responseNode.message;
+    Object.keys(responseNode.replaceCondition.replacePaths).forEach(p => {
+        msg = msg.replace(p, entities[responseNode.replaceCondition.replacePaths[p]]);
+    });
+    return { ...responseNode, message: msg };
+
+}
+
+async function reponseFormatter(targetNode, nlpEvent) {
     const msgArr = responseModel.messages[targetNode.message];
     var formattedResponse = [];
     if (msgArr && msgArr.length >= 1) {
@@ -60,6 +70,9 @@ async function reponseFormatter(targetNode) {
                         break;
                     case messageTypes.quickReplies:
                         resp = await getQuickReplies(m, targetNode);
+                        break;
+                    case messageTypes.plainTextByEntities:
+                        resp = await getPlainTextByEntities(m, nlpEvent.entities);
                         break;
                     case messageTypes.plainText:
                     default:
@@ -83,8 +96,8 @@ async function reponseFormatter(targetNode) {
 }
 
 async function resolveResponseFormats(responseNode) {
-    if (responseNode.value) {
-        return await reponseFormatter(responseNode).then(res => {
+    if (responseNode.targetNode.value) {
+        return await reponseFormatter(responseNode.targetNode, responseNode.nlpEvent).then(res => {
             log.info(`${filename} > ${arguments.callee.name}: response is successfuly formatted`);
             log.debug(`${filename} > ${arguments.callee.name}: response - ${JSON.stringify(res)}`);
             return res;
