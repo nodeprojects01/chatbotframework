@@ -3,7 +3,9 @@ const { log } = require("../../config/logger");
 const { performance } = require('perf_hooks');
 const { isJSON } = require('../../utils/helper');
 const filename = __filename.slice(__dirname.length + 1, -3);
-const moment = require('moment')
+const moment = require('moment');
+const lodash = require('lodash.get');
+
 class SearchTree {
     constructor(data,entities) {
         if (!isJSON(data))
@@ -123,8 +125,22 @@ class SearchTree {
             }, []);
     }
 
-    checkRequiredNodeinDotPath(path){
-        
+    async checkRequiredNodeinDotPath(node,path,finalTargetNode=""){
+        var pos = path.indexOf('.');
+
+        var currentValue = path.substring(0,pos); 
+        var currentNode = lodash(node, currentValue);
+        if(currentNode && currentNode.required && !this.isvalueValid(currentNode.valueType,this.entities[node.entity],currentNode.value)){
+            return finalTargetNode;
+        }
+        else if(pos==-1){
+            finalTargetNode = finalTargetNode+"."+path
+            return finalTargetNode;
+        }
+        else{
+            finalTargetNode=finalTargetNode+"."+currentValue
+        }
+        return this.checkRequiredNodeinDotPath(currentNode,path.substring(pos+1),finalTargetNode)
     }
 }
 

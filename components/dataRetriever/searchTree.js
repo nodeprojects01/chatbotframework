@@ -26,23 +26,7 @@ function nth_occurrence(string, char, nth) {
     }
 }
 
-function isRequired(isReqPaths, dotPaths) {
-    var ind = isReqPaths.indexOf('1')
-    if (ind > -1) {
-        var newdotPath = '';
-        dotPaths.split('.').map((d, i) => {
-            if (ind > i && i != 0) {
-                newdotPath = newdotPath + '.' + d
-            }
-        }
-        )
-        return newdotPath;
 
-    }
-    else {
-        return dotPaths;
-    }
-}
 
 /**
  * The function traverse through response model to get response object
@@ -75,33 +59,22 @@ async function searchResponseTree(nlpEvent) {
     }
 }
 function findCommonPath(paths){
-    var n = paths.length
-    var s = arr[0];
-    var len = s.length();
-    var res = "";
-    for (var i = 0; i < len; i++) {
-        for (var j = i + 1; j <= len; j++) {
-
-            // generating all possible substrings
-            // of our reference string arr[0] i.e s
-            var stem = s.substring(i, j);
-            var k = 1;
-            for (k = 1; k < n; k++)
-
-                // Check if the generated stem is
-                // common to all words
-                if (!arr[k].contains(stem))
-                    break;
-
-            // If current substring is present in
-            // all strings and its length is greater
-            // than current result
-            if (k == n && res.length() < stem.length())
-                res = stem;
+    var pathArr=[]
+    paths.map(p=>pathArr.push(p.split('.')))
+    var flag=false
+    for(var i=0;i<pathArr[0].length;i++){
+        for(var j=1;j<pathArr.length;j++){
+            if(pathArr[0][i]!=pathArr[j][i]){
+                flag=true
+            }
+        }
+        if(flag){
+            break
         }
     }
-    return res;
-}
+    return pathArr[0].slice(0,i).join('.')
+     
+  }
 async function searchThroughTree(intentIndex, rootNode, entities) {
     try {
         const st = new SearchTree(rootNode[0], entities);
@@ -116,6 +89,7 @@ async function searchThroughTree(intentIndex, rootNode, entities) {
             selectedPath = dotPaths[0]
         }
         else if (dotPaths.length >= 2) {
+
             selectedPath = findCommonPath(dotPaths);
         }
         else {
@@ -124,11 +98,8 @@ async function searchThroughTree(intentIndex, rootNode, entities) {
             log.error(`${filename} > ${arguments.callee.name}: bot model must have invalid values that are not matching the bot's entity values`);
             return responseModel.messages.default.error;
         }
-
-        // st.checkRequiredNodeinDotPath(selectedPath)
-        // const path = st.getDotPaths();
-
-        const strPath = `intents[${intentIndex}]` +  dotPaths[0];
+        var path = await st.checkRequiredNodeinDotPath(rootNode[0],selectedPath.substring(1));
+        const strPath = `intents[${intentIndex}]` +  path;
         const targetNode = lodash(botModel, strPath);
         return targetNode;
     }

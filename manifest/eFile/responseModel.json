@@ -163,8 +163,14 @@
         ],
         "8": [
             {
-                "messageType": "PlainText",
-                "message": "Here is the eFile usage metrics report generated for 1-1-2022 to 31-1-2022"
+                "messageType": "PlainTextByEntities",
+                "message": "Here is the eFile usage metrics report generated for str_01 to str_02",
+                "replaceCondition": {
+                    "replacePaths": {
+                        "str_01": "StartDate",
+                        "str_02": "EndDate"
+                    }
+                }
             },
             {
                 "messageType": "HyperLink",
