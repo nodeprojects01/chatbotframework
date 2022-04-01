@@ -9,7 +9,7 @@ const { searchResponseTree } = require("./components/dataRetriever/searchTree");
 const { resolveResponseFormats } = require("./components/dataRetriever/resolveResponseFormats");
 const { prepareBotResponse } = require("./components/dataRetriever/prepareBotResponse");
 const { saveConversation } = require("./components/conversationStorage/saveConversation");
-
+const { translateToUIData } = require("./components/translator/toChatUI");
 
 // getUserInput - get user utterance
 // createNlpPayload - format to NLP input template with user input details

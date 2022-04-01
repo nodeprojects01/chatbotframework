@@ -86,39 +86,7 @@
                             "entity": "EfileType",
                             "required":true,
                             "message": "6",
-                            "values": [{
-                                "value": "Puerto Rico eFile",
-                                "valueType":"text",
-                                "responseType": "AskEntity",
-                                "entity": "StartDate",
-                                "message": "6",
-                                "values": [
-                                    {
-                                        "value": "DD-MM-YYYY",
-                                        "valueType":"date",
-                                        "required":true,
-                                        "responseType": "AskEntity",
-                                        "entity": "EndDate",
-                                        "message": "7",
-                                        "values": [
-                                            {
-                                                "value": "[0-9]{2}/[0-9]{2}/[0-9]{4}",
-                                                "valueType":"regex",
-                                                "responseType": "Close",
-                                                "entity": null,
-                                                "message": "8",
-                                                "values": []
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "value": "DD-MM-YYYY hh:mm:ss",
-                                        "responseType": "Close",
-                                        "message": "7",
-                                        "values": []
-                                    }
-                                ]
-                            }]
+                            "values": []
                         }
                         
                     ]
