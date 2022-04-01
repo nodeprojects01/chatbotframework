@@ -47,7 +47,7 @@ async function searchResponseTree(nlpEvent) {
         else {
             // when no entities are available, guide user flow from the root node
             // return message of the first node
-            var availableEntities = Object.values(nlpEvent.entities).filter(v=>v!=null);
+            var availableEntities = Object.values(nlpEvent.entities).filter(v => v != null);
             console.log(availableEntities)
             targetNode = (availableEntities.length === 0) ? rootNode[0] : await searchThroughTree(intentIndex, rootNode, nlpEvent.entities);
             return { nlpEvent, targetNode };
@@ -58,23 +58,23 @@ async function searchResponseTree(nlpEvent) {
         return e
     }
 }
-function findCommonPath(paths){
-    var pathArr=[]
-    paths.map(p=>pathArr.push(p.split('.')))
-    var flag=false
-    for(var i=0;i<pathArr[0].length;i++){
-        for(var j=1;j<pathArr.length;j++){
-            if(pathArr[0][i]!=pathArr[j][i]){
-                flag=true
+function findCommonPath(paths) {
+    var pathArr = []
+    paths.map(p => pathArr.push(p.split('.')))
+    var flag = false
+    for (var i = 0; i < pathArr[0].length; i++) {
+        for (var j = 1; j < pathArr.length; j++) {
+            if (pathArr[0][i] != pathArr[j][i]) {
+                flag = true
             }
         }
-        if(flag){
+        if (flag) {
             break
         }
     }
-    return pathArr[0].slice(0,i).join('.')
-     
-  }
+    return pathArr[0].slice(0, i).join('.')
+
+}
 async function searchThroughTree(intentIndex, rootNode, entities) {
     try {
         const st = new SearchTree(rootNode[0], entities);
@@ -84,13 +84,13 @@ async function searchThroughTree(intentIndex, rootNode, entities) {
         log.info(`${filename} > ${arguments.callee.name}: identified ${dotPaths.length} paths`);
         log.debug(`${filename} > ${arguments.callee.name}: paths - ${dotPaths}`);
 
-        var selectedPath=""
+        var selectedPath = ""
         if (dotPaths.length === 1) {
             selectedPath = dotPaths[0]
         }
         else if (dotPaths.length >= 2) {
-
             selectedPath = findCommonPath(dotPaths);
+
         }
         else {
             // return exception message
@@ -98,9 +98,13 @@ async function searchThroughTree(intentIndex, rootNode, entities) {
             log.error(`${filename} > ${arguments.callee.name}: bot model must have invalid values that are not matching the bot's entity values`);
             return responseModel.messages.default.error;
         }
-        var path = await st.checkRequiredNodeinDotPath(rootNode[0],selectedPath.substring(1));
-        const strPath = `intents[${intentIndex}]` +  path;
+        var path = await st.checkRequiredNodeinDotPath(rootNode[0], selectedPath.substring(1));
+        const strPath = `intents[${intentIndex}]` + path;
         const targetNode = lodash(botModel, strPath);
+
+        // update values of target node by options from multiple dot paths
+        // 
+
         return targetNode;
     }
     catch (e) {

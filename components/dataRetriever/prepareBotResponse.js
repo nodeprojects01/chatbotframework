@@ -17,8 +17,12 @@ function botResponse(obj) {
     }
 }
 
-function prepareBotResponse (resp) { 
-    return botResponse(resp); 
+function prepareBotResponse(resp) {
+    var botResponses = [];
+    resp.message.forEach(r => {
+        botResponses.push(botResponse(r));
+    });
+    return botResponses;
 }
 
 module.exports = { prepareBotResponse }
