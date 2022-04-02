@@ -58,8 +58,9 @@ async function searchResponseTree(nlpEvent) {
         return e
     }
 }
-function findCommonPath(paths) {
+function findCommonPath(intentIndex,paths) {
     var pathArr = []
+    var options =[]
     paths.map(p => pathArr.push(p.split('.')))
     var flag = false
     for (var i = 0; i < pathArr[0].length; i++) {
@@ -72,7 +73,16 @@ function findCommonPath(paths) {
             break
         }
     }
-    return pathArr[0].slice(0, i).join('.')
+    for(var k=0;k<pathArr.length;k++){
+        var v=pathArr[k].slice(0,i+1).join('.');
+        if(!options.includes(v)){
+            const strPath = `intents[${intentIndex}]` + v +".value";
+            const targetvalue = lodash(botModel, strPath);
+            options.push(targetvalue)
+        }
+    }
+    var path = pathArr[0].slice(0, i).join('.');
+    return [ path , options ]
 
 }
 async function searchThroughTree(intentIndex, rootNode, entities) {
@@ -89,7 +99,7 @@ async function searchThroughTree(intentIndex, rootNode, entities) {
             selectedPath = dotPaths[0]
         }
         else if (dotPaths.length >= 2) {
-            selectedPath = findCommonPath(dotPaths);
+            [selectedPath , options ] = findCommonPath(intentIndex,dotPaths);
 
         }
         else {
@@ -101,7 +111,10 @@ async function searchThroughTree(intentIndex, rootNode, entities) {
         var path = await st.checkRequiredNodeinDotPath(rootNode[0], selectedPath.substring(1));
         const strPath = `intents[${intentIndex}]` + path;
         const targetNode = lodash(botModel, strPath);
+        if(options.length>0){
+            targetNode.values=targetNode.values.filter(v=>options.includes(v.value))
 
+        }
         // update values of target node by options from multiple dot paths
         // 
 
