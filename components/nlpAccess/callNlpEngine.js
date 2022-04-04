@@ -33,9 +33,9 @@ function formatNlpResponse(nlpResponse) {
         intent: "business metrics report",
         entities: {
             "ReportType": null,
-            "EfileType": "Puerto Rico eFile",
-            "StartDate": "10-12-2020",
-            "EndDate": "11/12/2020"
+            "EfileType": "H&W eFile",
+            "StartDate": null,
+            "EndDate": null
         },
         sessionAttributes: {}
     }
