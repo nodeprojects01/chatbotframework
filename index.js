@@ -9,7 +9,7 @@ const { searchResponseTree } = require("./components/dataRetriever/searchTree");
 const { resolveResponseFormats } = require("./components/dataRetriever/resolveResponseFormats");
 const { prepareBotResponse } = require("./components/dataRetriever/prepareBotResponse");
 const { saveConversation } = require("./components/conversationStorage/saveConversation");
-
+const { translateToUIData } = require("./components/translator/toChatUI");
 
 // getUserInput - get user utterance
 // createNlpPayload - format to NLP input template with user input details
@@ -50,7 +50,7 @@ async function getStep(step, obj) {
 async function executeSteps(userInput) {
     var funInput = userInput;
     for (const step of Object.values(steps)) {
-        log.debug(`executing step - ${step}, with input value ${funInput}`);
+        log.debug(`executing step - ${step}, with input value ${JSON.stringify(funInput)}`);
         funInput = await getStep(step, funInput);
     };
 }

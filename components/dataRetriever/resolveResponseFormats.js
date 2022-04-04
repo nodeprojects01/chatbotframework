@@ -37,6 +37,7 @@ function getQuickReplies(responseNode, targetNode) {
     // check the format of the options and prepare for response
     // [] - add all entity values as options, ["val1", "val2", "val3"] - options pre-defined
     var responseOptions = responseNode.options ? responseNode.options : [];
+    
     if (responseNode.options && responseNode.options.length === 0) {
         targetNode.values.forEach(o => {
             responseOptions.push({
@@ -44,6 +45,14 @@ function getQuickReplies(responseNode, targetNode) {
                 "actualMessage": o.value
             });
         });
+    }
+    if(targetNode.values.length>0){
+        var option=[]
+        targetNode.values.forEach(o => {
+            option.push(o.value.toLowerCase())
+        })
+        responseOptions = responseOptions.filter(r=>option.includes(r.actualMessage.toLowerCase()))
+        
     }
     return { ...responseNode, options: responseOptions };
 }
@@ -78,7 +87,7 @@ async function reponseFormatter(targetNode, nlpEvent) {
                     default:
                         resp = m;
                 }
-                formattedResponse.push(botResp);
+                formattedResponse.push(resp);
             }
             targetNode.message = formattedResponse;
             return targetNode;

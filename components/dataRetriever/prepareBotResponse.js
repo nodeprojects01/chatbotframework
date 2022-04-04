@@ -6,7 +6,7 @@ function botResponse(obj) {
     try {
         console.log(JSON.stringify(obj));
         return {
-            messageType: obj.messageType ? obj.messageType : messageTypes.plainText,
+            messageType: obj.messageType ? obj.messageType : "PlainText",
             message: obj.message ? obj.message : "",
             options: obj.options ? obj.options : []
         };
@@ -17,8 +17,12 @@ function botResponse(obj) {
     }
 }
 
-function prepareBotResponse (resp) { 
-    return botResponse(resp); 
+function prepareBotResponse(resp) {
+    var botResponses = [];
+    resp.message.forEach(r => {
+        botResponses.push(botResponse(r));
+    });
+    return botResponses;
 }
 
 module.exports = { prepareBotResponse }

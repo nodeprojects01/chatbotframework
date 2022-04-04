@@ -26,23 +26,7 @@ function nth_occurrence(string, char, nth) {
     }
 }
 
-function isRequired(isReqPaths, dotPaths) {
-    var ind = isReqPaths.indexOf('1')
-    if (ind > -1) {
-        var newdotPath = '';
-        dotPaths.split('.').map((d, i) => {
-            if (ind > i && i != 0) {
-                newdotPath = newdotPath + '.' + d
-            }
-        }
-        )
-        return newdotPath;
 
-    }
-    else {
-        return dotPaths;
-    }
-}
 
 /**
  * The function traverse through response model to get response object
@@ -63,6 +47,8 @@ async function searchResponseTree(nlpEvent) {
         else {
             // when no entities are available, guide user flow from the root node
             // return message of the first node
+            var availableEntities = Object.values(nlpEvent.entities).filter(v => v != null);
+            console.log(availableEntities)
             targetNode = (availableEntities.length === 0) ? rootNode[0] : await searchThroughTree(intentIndex, rootNode, nlpEvent.entities);
             return { nlpEvent, targetNode };
         }
@@ -72,52 +58,49 @@ async function searchResponseTree(nlpEvent) {
         return e
     }
 }
+function findCommonPath(intentIndex,paths) {
+    var pathArr = []
+    var options =[]
+    paths.map(p => pathArr.push(p.split('.')))
+    var flag = false
+    for (var i = 0; i < pathArr[0].length; i++) {
+        for (var j = 1; j < pathArr.length; j++) {
+            if (pathArr[0][i] != pathArr[j][i]) {
+                flag = true
+            }
+        }
+        if (flag) {
+            break
+        }
+    }
+    for(var k=0;k<pathArr.length;k++){
+        var v=pathArr[k].slice(0,i+1).join('.');
+        if(!options.includes(v)){
+            const strPath = `intents[${intentIndex}]` + v +".value";
+            const targetvalue = lodash(botModel, strPath);
+            options.push(targetvalue)
+        }
+    }
+    var path = pathArr[0].slice(0, i).join('.');
+    return [ path , options ]
 
+}
 async function searchThroughTree(intentIndex, rootNode, entities) {
     try {
         const st = new SearchTree(rootNode[0], entities);
         await st.execute();
         const dotPaths = st.getDotPaths();
 
-
         log.info(`${filename} > ${arguments.callee.name}: identified ${dotPaths.length} paths`);
         log.debug(`${filename} > ${arguments.callee.name}: paths - ${dotPaths}`);
 
+        var selectedPath = ""
         if (dotPaths.length === 1) {
-            // if it not a leaf node (or response type is close) then return the message 
-            // else ask for next entity options
-            // var path = isRequired(isReqPaths[0], dotPaths[0]);
-
-
-
-            const strPath = `intents[${intentIndex}]` + path;
-            const targetNode = lodash(botModel, strPath);
-            return targetNode;
+            selectedPath = dotPaths[0]
         }
         else if (dotPaths.length >= 2) {
-            // return generic message for confirmation
-            var targetNode = "";
-            const vp = st.getValuePaths();
-            vp[0].some((v, i) => {
-                if (v != vp[1][i]) {
-                    var path = isRequired(isReqPaths[0], dotPaths[0])
-                    const strPath = `intents[${intentIndex}]` + path;
-                    var ii = nth_occurrence(strPath, '.', i);
-                    targetNode = lodash(botModel, strPath.substr(0, ii));
-                    // console.log(targetNode.value);
-                    return true;
-                }
-            });
+            [selectedPath , options ] = findCommonPath(intentIndex,dotPaths);
 
-            // if any node in the dot paths is mandatory/required and it's entity value is null, then
-            // return that node
-            st.checkRequiredNodeinDotPath()
-            const path = st.getDotPaths();
-
-            const strPath = `intents[${intentIndex}]` + path;
-            targetNode = lodash(botModel, strPath.substr(0, ii));
-
-            return targetNode;
         }
         else {
             // return exception message
@@ -125,6 +108,17 @@ async function searchThroughTree(intentIndex, rootNode, entities) {
             log.error(`${filename} > ${arguments.callee.name}: bot model must have invalid values that are not matching the bot's entity values`);
             return responseModel.messages.default.error;
         }
+        var path = await st.checkRequiredNodeinDotPath(rootNode[0], selectedPath.substring(1));
+        const strPath = `intents[${intentIndex}]` + path;
+        const targetNode = lodash(botModel, strPath);
+        if(options.length>0){
+            targetNode.values=targetNode.values.filter(v=>options.includes(v.value))
+
+        }
+        // update values of target node by options from multiple dot paths
+        // 
+
+        return targetNode;
     }
     catch (e) {
         log.error(`${filename} > ${arguments.callee.name}: something went wrong - ${e}`);

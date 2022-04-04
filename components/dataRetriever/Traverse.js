@@ -3,9 +3,11 @@ const { log } = require("../../config/logger");
 const { performance } = require('perf_hooks');
 const { isJSON } = require('../../utils/helper');
 const filename = __filename.slice(__dirname.length + 1, -3);
+const moment = require('moment');
+const lodash = require('lodash.get');
 
 class SearchTree {
-    constructor(data) {
+    constructor(data,entities) {
         if (!isJSON(data))
             throw new Error("invalide JSON input");
 
@@ -15,7 +17,6 @@ class SearchTree {
         this.valuePaths = [];
         this.stack = [];
         this.dotPaths = [];
-        this.isrequired = [];
     }
 
     getValuePaths() {
@@ -41,21 +42,21 @@ class SearchTree {
         })
         log.silly(`${filename} > execute: tree traversing started to get path of entity values`);
         var st = performance.now();
-        await this.#traverse(this.data, null, this.data.entity);
+        await this.traverse(this.data, null, this.data.entity);
         var tt = ((performance.now() - st) / 1000).toFixed(2);
         log.silly(`${filename} > execute: tree traversing finished in ${tt}s`);
         return this.dotPaths;
     }
 
-    #traverse(node, index, entity) {
+    traverse(node, index, entity) {
         log.debug(`${filename} > traverse: `);
         log.debug(`${filename} > traverse: current stack values - ${this.stack}`);
         var req = 0
         var isValidValue = this.isvalueValid(node.valueType, this.entitiesToSearch[entity] ? this.entitiesToSearch[entity].value : "", node.value);
-        if (node.required == true && !isValidValue) {
-            req = 1;
-        }
-        this.stack.push(node.value + '_' + index + '_' + req);
+        // if (node.required == true && !isValidValue) {
+        //     req = 1;
+        // }
+        this.stack.push(node.value + '_' + index );
         log.debug(`${filename} > traverse: pushed value to stack - ${node.value}`);
 
         if (Object.keys(this.entitiesToSearch).includes(entity) && isValidValue) {
@@ -80,21 +81,17 @@ class SearchTree {
     makePath() {
         var path = [];
         var strPath = "";
-        var isreq = [];
         this.stack.forEach((obj, i) => {
             var v = obj.split("_");
             path.push(v[0]);
-            isreq.push(v[2]);
             if (v[1] != "null") {
                 strPath = strPath + ".values[" + v[1] + "]"
             }
         })
         this.valuePaths.push(path);
         this.dotPaths.push(strPath);
-        this.isrequired.push(isreq);
         log.debug(`${filename} > makePath: value path formed - ${path}`);
         log.debug(`${filename} > makePath: dot notation path formed - ${strPath}`);
-        log.debug(`${filename} > makePath: required path formed - ${isreq}`);
     }
 
     isvalueValid(action, entityValue, nodeValue) {
@@ -126,6 +123,24 @@ class SearchTree {
                 }
                 return r;
             }, []);
+    }
+
+    async checkRequiredNodeinDotPath(node,path,finalTargetNode=""){
+        var pos = path.indexOf('.');
+
+        var currentValue = path.substring(0,pos); 
+        var currentNode = lodash(node, currentValue);
+        if(currentNode && currentNode.required && !this.isvalueValid(currentNode.valueType,this.entities[node.entity],currentNode.value)){
+            return finalTargetNode;
+        }
+        else if(pos==-1){
+            finalTargetNode = finalTargetNode+"."+path
+            return finalTargetNode;
+        }
+        else{
+            finalTargetNode=finalTargetNode+"."+currentValue
+        }
+        return this.checkRequiredNodeinDotPath(currentNode,path.substring(pos+1),finalTargetNode)
     }
 }
 
