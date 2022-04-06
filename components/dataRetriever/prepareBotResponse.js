@@ -18,6 +18,9 @@ function botResponse(obj) {
 }
 
 function prepareBotResponse(resp) {
+    if (!resp) throw Error("the input object for prepareBotResponse function is invalid");
+    if(!("message" in resp)) throw Error("the input object does not contain message details");
+
     var botResponses = [];
     resp.message.forEach(r => {
         botResponses.push(botResponse(r));

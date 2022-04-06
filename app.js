@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const filename = __filename.slice(__dirname.length + 1);
 const executeSteps = require("./index.js");
-
+const formatErrorDetails = require("./actions/FormatErrorDetails");
 
 function xssFilter(obj) {
     if (!obj) return null;
@@ -28,17 +28,17 @@ app.get("/health", (req, res) => {
 app.post("/getQueryResponse", async (req, res) => {
     try {
         log.info(`${filename} > getQueryResponse`);
-        const eventObj = req.body;
-        executeSteps({ query: "hi" }).then((resp) => {
+        const inputObj = req.body;
+        executeSteps(inputObj).then((resp) => {
             log.info(`${filename} > getQueryResponse - process completed`);
             res.send(xssFilter({ statusCode: 200, data: resp }));
         }).catch(e => {
-            log.error(`${filename} > getQueryResponse - error while processing the request - ${JSON.stringify(e)}`);
+            log.error(`${filename} > getQueryResponse - error while processing the request - ${JSON.stringify(formatErrorDetails(e))}`);
             res.send(xssFilter({ statusCode: 500, msg: "error while processing the request in getQueryResponse" }));
         });
     }
     catch (e) {
-        log.error(`${filename} > getQueryResponse - error - ${JSON.stringify(e)}`);
+        log.error(`${filename} > getQueryResponse - error - ${JSON.stringify(formatErrorDetails(e))}`);
     }
 });
 
@@ -49,10 +49,19 @@ app.post("/getQueryResponse", async (req, res) => {
 
 // ================= For testing ========================
 
+function start() {
+    try {
+        executeSteps({ query: "hi" }).then((res) => {
+            console.log("response =>", res);
+            console.log("process completed");
+        }).catch(e => {
+            log.error(`${filename} > start - error - ${JSON.stringify()}`)
+        });
+    }
+    catch (e) {
+        log.error(`${filename} > start - error - ${JSON.stringify(e)}`);
+    }
+}
 
-executeSteps({ query: "hi" }).then((res) => {
-    console.log("response =>", res);
-    console.log("process completed");
-});
-
+start();
 // ================= For testing ========================

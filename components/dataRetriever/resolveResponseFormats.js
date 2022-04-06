@@ -5,6 +5,7 @@ const lodash = require('lodash.get');
 const { log } = require("../../config/logger");
 const { performance } = require('perf_hooks');
 const filename = __filename.slice(__dirname.length + 1, -3);
+require("../../globalVars");
 
 const messageTypes = {
     plainText: "PlainText",
@@ -37,7 +38,7 @@ function getQuickReplies(responseNode, targetNode) {
     // check the format of the options and prepare for response
     // [] - add all entity values as options, ["val1", "val2", "val3"] - options pre-defined
     var responseOptions = responseNode.options ? responseNode.options : [];
-    
+
     if (responseNode.options && responseNode.options.length === 0) {
         targetNode.values.forEach(o => {
             responseOptions.push({
@@ -46,13 +47,13 @@ function getQuickReplies(responseNode, targetNode) {
             });
         });
     }
-    if(targetNode.values.length>0){
-        var option=[]
+    if (targetNode.values.length > 0) {
+        var option = []
         targetNode.values.forEach(o => {
             option.push(o.value.toLowerCase())
         })
-        responseOptions = responseOptions.filter(r=>option.includes(r.actualMessage.toLowerCase()))
-        
+        responseOptions = responseOptions.filter(r => option.includes(r.actualMessage.toLowerCase()))
+
     }
     return { ...responseNode, options: responseOptions };
 }
@@ -90,6 +91,7 @@ async function reponseFormatter(targetNode, nlpEvent) {
                 formattedResponse.push(resp);
             }
             targetNode.message = formattedResponse;
+            global.appSessionMemory.targetNode = targetNode;
             return targetNode;
         }
         catch (e) {
@@ -104,22 +106,25 @@ async function reponseFormatter(targetNode, nlpEvent) {
     }
 }
 
-async function resolveResponseFormats(responseNode) {
-    if (responseNode.targetNode.value) {
-        return await reponseFormatter(responseNode.targetNode, responseNode.nlpEvent).then(res => {
+async function resolveResponseFormats(targetNode) {
+    if (!targetNode) throw Error("the input object for resolveResponseFormats function is invalid");
+    if (!("nlpResponse" in global.appSessionMemory)) throw Error("the global variables does not contain nlpResponse");
+
+    if (targetNode.value) {
+        return await reponseFormatter(targetNode, global.appSessionMemory.nlpResponse).then(res => {
             log.info(`${filename} > ${arguments.callee.name}: response is successfuly formatted`);
             log.debug(`${filename} > ${arguments.callee.name}: response - ${JSON.stringify(res)}`);
             return res;
         }).catch(e => {
             log.error(`${filename} > ${arguments.callee.name}: error while formatting the response ${e}`);
-            return responseModel.messages.default.error;
+            throw Error(`error while formatting the response`);
         });
     }
     else {
         // return exception message
         // bot model must have invalid values that are not matching the bot's entity values
         log.error(`${filename} > ${arguments.callee.name}: bot model must have invalid values that are not matching the bot's entity values`);
-        return responseModel.messages.default.error;
+        throw Error(`bot model must have invalid values that are not matching the bot's entity values`);
     }
 }
 

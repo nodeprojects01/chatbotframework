@@ -48,11 +48,12 @@ async function getStep(step, obj) {
 
 
 async function executeSteps(userInput) {
-    var funInput = userInput;
+    var finalOutput = userInput;
     for (const step of Object.values(steps)) {
-        log.debug(`executing step - ${step}, with input value ${JSON.stringify(funInput)}`);
-        funInput = await getStep(step, funInput);
+        log.debug(`executing step - [ ${step} ]`);
+        finalOutput = await getStep(step, finalOutput);
     };
+    return finalOutput;
 }
 
 

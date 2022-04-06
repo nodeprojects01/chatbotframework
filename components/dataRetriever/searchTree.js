@@ -6,7 +6,7 @@ const { log } = require("../../config/logger");
 const SearchTree = require("./Traverse");
 const lodash = require('lodash.get');
 const filename = __filename.slice(__dirname.length + 1, -3);
-
+require("../../globalVars");
 
 function nth_occurrence(string, char, nth) {
     var first_index = string.indexOf(char);
@@ -34,6 +34,10 @@ function nth_occurrence(string, char, nth) {
  * @returns 
  */
 async function searchResponseTree(nlpEvent) {
+    if (!nlpEvent) throw Error("the input object for searchResponseTree function is invalid");
+    if (!botModel) throw Error("bot model is not valid");
+    if (!("intents" in botModel)) throw Error("bot model does not contain necessary key values");
+
     try {
         var targetNode = "";
         const rootNode = botModel.intents.filter(o => o.value == nlpEvent.intent);
@@ -50,7 +54,7 @@ async function searchResponseTree(nlpEvent) {
             var availableEntities = Object.values(nlpEvent.entities).filter(v => v != null);
             console.log(availableEntities)
             targetNode = (availableEntities.length === 0) ? rootNode[0] : await searchThroughTree(intentIndex, rootNode, nlpEvent.entities);
-            return { nlpEvent, targetNode };
+            return targetNode;
         }
     }
     catch (e) {
@@ -116,8 +120,6 @@ async function searchThroughTree(intentIndex, rootNode, entities) {
             targetNode.values = targetNode.values.filter(v => options.includes(v.value))
 
         }
-        // update values of target node by options from multiple dot paths
-        // 
 
         return targetNode;
     }

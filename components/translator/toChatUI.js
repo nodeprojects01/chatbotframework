@@ -1,13 +1,14 @@
 
 
-const chatbotUI = {
-
-}
+require("../../globalVars");
 
 function translateToUIData(data) {
+    if(!("targetNode" in global.appSessionMemory)) throw Error("the global variables does not contain target node");
 
-    console.log(JSON.stringify(data))
-    return chatbotUI;
+    const targetNode = global.appSessionMemory.targetNode;
+    const chatbotUiFormat = targetNode.message;
+
+    return chatbotUiFormat;
 }
 
 
