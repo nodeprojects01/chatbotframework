@@ -111,10 +111,10 @@ async function resolveResponseFormats(targetNode) {
     if (!("nlpResponse" in global.appSessionMemory)) throw Error("the global variables does not contain nlpResponse");
 
     if (targetNode.value) {
-        return await reponseFormatter(targetNode, global.appSessionMemory.nlpResponse).then(res => {
+        return await reponseFormatter(targetNode, global.appSessionMemory.nlpResponse).then(formattedTargetNode => {
             log.info(`${filename} > ${arguments.callee.name}: response is successfuly formatted`);
-            log.debug(`${filename} > ${arguments.callee.name}: response - ${JSON.stringify(res)}`);
-            return res;
+            log.debug(`${filename} > ${arguments.callee.name}: response - ${JSON.stringify(formattedTargetNode)}`);
+            return formattedTargetNode;
         }).catch(e => {
             log.error(`${filename} > ${arguments.callee.name}: error while formatting the response ${e}`);
             throw Error(`error while formatting the response`);

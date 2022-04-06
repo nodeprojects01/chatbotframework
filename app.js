@@ -43,25 +43,25 @@ app.post("/getQueryResponse", async (req, res) => {
 });
 
 
-// app.listen(port, () => {
-//     log.info(`framework is listening to port: ${port}`);
-// });
+app.listen(port, () => {
+    log.info(`framework is listening to port: ${port}`);
+});
 
 // ================= For testing ========================
 
-function start() {
-    try {
-        executeSteps({ query: "hi" }).then((res) => {
-            console.log("response =>", res);
-            console.log("process completed");
-        }).catch(e => {
-            log.error(`${filename} > start - error - ${JSON.stringify()}`)
-        });
-    }
-    catch (e) {
-        log.error(`${filename} > start - error - ${JSON.stringify(e)}`);
-    }
-}
+// function start() {
+//     try {
+//         executeSteps({ query: "hi" }).then((res) => {
+//             console.log("response =>", res);
+//             console.log("process completed");
+//         }).catch(e => {
+//             log.error(`${filename} > start - error - ${JSON.stringify()}`)
+//         });
+//     }
+//     catch (e) {
+//         log.error(`${filename} > start - error - ${JSON.stringify(e)}`);
+//     }
+// }
 
-start();
+// start();
 // ================= For testing ========================
