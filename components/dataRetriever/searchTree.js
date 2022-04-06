@@ -105,7 +105,6 @@ async function searchThroughTree(intentIndex, rootNode, entities) {
         }
         else if (dotPaths.length >= 2) {
             [selectedPath, options] = findCommonPath(intentIndex, dotPaths);
-
         }
         else {
             // return exception message
@@ -118,7 +117,6 @@ async function searchThroughTree(intentIndex, rootNode, entities) {
         const targetNode = lodash(botModel, strPath);
         if (options && options.length > 0) {
             targetNode.values = targetNode.values.filter(v => options.includes(v.value))
-
         }
 
         return targetNode;

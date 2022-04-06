@@ -5,7 +5,7 @@ const filename = __filename.slice(__dirname.length + 1, -3);
 var botTitleMessage = {
     messageType: "",
     message: "",
-    followText: []
+    followMessage: []
 }
 
 function botResponse(obj) {
@@ -28,18 +28,18 @@ function prepareBotResponse(resp) {
     if (!("message" in resp)) throw Error("the input object does not contain message details");
     if (resp.message.length === 0) throw Error("the input object does not contain messages")
 
-    var followTexts = [];
+    var followMessages = [];
     resp.message.forEach((r, i) => {
         if (i === 0) {
             botTitleMessage.messageType = r.messageType;
             botTitleMessage.message = r.message;
         }
         else {
-            followTexts.push(botResponse(r));
+            followMessages.push(botResponse(r));
         }
     });
 
-    botTitleMessage.followText = followTexts;
+    botTitleMessage.followMessage = followMessages;
     console.log("final resp to ui >>>> ", botTitleMessage);
     return botTitleMessage;
 }

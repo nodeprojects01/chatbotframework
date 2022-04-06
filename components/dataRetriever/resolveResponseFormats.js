@@ -67,8 +67,11 @@ async function getPlainTextByEntities(responseNode, entities) {
 
 }
 
-async function reponseFormatter(targetNode, nlpEvent) {
+async function reponseFormatter(targetNode) {
+    const nlpResponse = global.appSessionMemory.nlpResponse;
+    console.log("reponseFormatter targetNode >>", targetNode);
     const msgArr = responseModel.messages[targetNode.message];
+    console.log("reponseFormatter msgArr >>", msgArr);
     var formattedResponse = [];
     if (msgArr && msgArr.length >= 1) {
         try {
@@ -82,7 +85,7 @@ async function reponseFormatter(targetNode, nlpEvent) {
                         resp = await getQuickReplies(m, targetNode);
                         break;
                     case messageTypes.plainTextByEntities:
-                        resp = await getPlainTextByEntities(m, nlpEvent.entities);
+                        resp = await getPlainTextByEntities(m, nlpResponse.entities);
                         break;
                     case messageTypes.plainText:
                     default:
@@ -90,9 +93,10 @@ async function reponseFormatter(targetNode, nlpEvent) {
                 }
                 formattedResponse.push(resp);
             }
-            targetNode.message = formattedResponse;
-            global.appSessionMemory.targetNode = targetNode;
-            return targetNode;
+            var tn = targetNode;
+            tn.message = formattedResponse;
+            global.appSessionMemory.targetNode = tn;
+            return tn;
         }
         catch (e) {
             console.log(e);
@@ -111,7 +115,7 @@ async function resolveResponseFormats(targetNode) {
     if (!("nlpResponse" in global.appSessionMemory)) throw Error("the global variables does not contain nlpResponse");
 
     if (targetNode.value) {
-        return await reponseFormatter(targetNode, global.appSessionMemory.nlpResponse).then(formattedTargetNode => {
+        return await reponseFormatter(targetNode).then(formattedTargetNode => {
             log.info(`${filename} > ${arguments.callee.name}: response is successfuly formatted`);
             log.debug(`${filename} > ${arguments.callee.name}: response - ${JSON.stringify(formattedTargetNode)}`);
             return formattedTargetNode;

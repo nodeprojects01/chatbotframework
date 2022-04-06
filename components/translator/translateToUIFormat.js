@@ -13,6 +13,7 @@ function translateToUIFormat(responseObject) {
             responseToChatbotUI = require("./toNativeUI").prepareBotResponse(responseObject);
     }
 
+    global.appSessionMemory.responseToChatbotUI = responseToChatbotUI;
     return responseToChatbotUI;
 }
 

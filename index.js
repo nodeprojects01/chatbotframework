@@ -49,7 +49,8 @@ async function executeSteps(userInput) {
         log.debug(`executing step - [ ${step} ]`);
         finalOutput = await getStep(step, finalOutput);
     };
-    return finalOutput;
+
+    return global.appSessionMemory.responseToChatbotUI;
 }
 
 
