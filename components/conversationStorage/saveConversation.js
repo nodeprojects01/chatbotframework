@@ -9,7 +9,7 @@ function saveConversation(responseObject) {
         throw Error("the input object does not contain message details");
     }
 
-    const getTargetNode = global.appSessionMemory.targetNode;
+    const getTargetNode = global.appSessionMemory.TargetNode;
 
     const conversation = {
         id: 1,

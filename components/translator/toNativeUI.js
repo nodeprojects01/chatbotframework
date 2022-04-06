@@ -10,7 +10,6 @@ var botTitleMessage = {
 
 function botResponse(obj) {
     try {
-        console.log(JSON.stringify(obj));
         return {
             messageType: obj.messageType ? obj.messageType : "PlainText",
             message: obj.message ? obj.message : "",
@@ -40,7 +39,6 @@ function prepareBotResponse(resp) {
     });
 
     botTitleMessage.followMessage = followMessages;
-    console.log("final resp to ui >>>> ", botTitleMessage);
     return botTitleMessage;
 }
 

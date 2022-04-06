@@ -69,9 +69,7 @@ async function getPlainTextByEntities(responseNode, entities) {
 
 async function reponseFormatter(targetNode) {
     const nlpResponse = global.appSessionMemory.nlpResponse;
-    console.log("reponseFormatter targetNode >>", targetNode);
     const msgArr = responseModel.messages[targetNode.message];
-    console.log("reponseFormatter msgArr >>", msgArr);
     var formattedResponse = [];
     if (msgArr && msgArr.length >= 1) {
         try {
@@ -93,13 +91,12 @@ async function reponseFormatter(targetNode) {
                 }
                 formattedResponse.push(resp);
             }
-            var tn = targetNode;
+            var tn = { ...targetNode };
             tn.message = formattedResponse;
-            global.appSessionMemory.targetNode = tn;
+            global.appSessionMemory.TargetNode = tn;
             return tn;
         }
         catch (e) {
-            console.log(e);
             log.error(`${filename} > ${arguments.callee.name}: error while formatting the response - ${e.message}`);
             throw new Error(`error while formatting the response`);
         }

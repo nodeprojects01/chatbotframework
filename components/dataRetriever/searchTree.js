@@ -52,7 +52,6 @@ async function searchResponseTree(nlpEvent) {
             // when no entities are available, guide user flow from the root node
             // return message of the first node
             var availableEntities = Object.values(nlpEvent.entities).filter(v => v != null);
-            console.log(availableEntities)
             targetNode = (availableEntities.length === 0) ? rootNode[0] : await searchThroughTree(intentIndex, rootNode, nlpEvent.entities);
             return targetNode;
         }

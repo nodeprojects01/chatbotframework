@@ -9,7 +9,7 @@ const { searchResponseTree } = require("./components/dataRetriever/searchTree");
 const { resolveResponseFormats } = require("./components/dataRetriever/resolveResponseFormats");
 const { saveConversation } = require("./components/conversationStorage/saveConversation");
 const { translateToUIFormat } = require("./components/translator/translateToUIFormat");
-
+const botModel = require("./" + config.botModelPath);
 
 async function getStep(step, obj) {
     switch (step) {

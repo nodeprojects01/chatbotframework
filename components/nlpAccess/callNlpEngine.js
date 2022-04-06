@@ -8,30 +8,24 @@ function callNLPEngine(nlpPayload) {
     if (!("query" in nlpPayload)) throw Error("user query is not found in nlpPayload");
     if (!nlpPayload.query) throw Error("nlp payload must contain user query");
 
-    if (nlpPayload.query) {
-        // call NLP API here
-        const nlpResponse = {
-            query: nlpPayload.query,
-            intent: "business metrics report",
-            entities: {
-                "ReportType": null,
-                "EfileType": "Puerto Rico eFile",
-                "StartDate": null,
-                "EndDate": "25-03-2022"
-            },
-            sessionAttributes: {}
-        };
+    // call NLP API here
+    const nlpResponse = {
+        query: nlpPayload.query,
+        intent: "business metrics report",
+        entities: {
+            "ReportType": null,
+            "EfileType": "Puerto Rico eFile",
+            "StartDate": null,
+            "EndDate": "25-03-2022"
+        },
+        sessionAttributes: {}
+    };
 
-        return nlpResponse;
-    }
-    else {
-        // NLP api input cannot be empty
-        console.log("empty input");
-    }
+    return nlpResponse;
 }
 
 function formatNlpResponse(nlpResponse) {
-    if(!nlpResponse) throw Error("the input object for formatNlpResponse function is invalid");
+    if (!nlpResponse) throw Error("the input object for formatNlpResponse function is invalid");
     // NLP response event
     const event = {
         conversationId: "ax1234bernzzz234499",  // can also be identified as session id
