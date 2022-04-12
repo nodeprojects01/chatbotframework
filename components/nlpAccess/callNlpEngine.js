@@ -2,6 +2,7 @@
 const { log } = require("../../config/logger");
 const config = require("../../config/config");
 const filename = __filename.slice(__dirname.length + 1, -3);
+const callLuis = require("./callLuis");
 require("../../globalVars");
 
 const nlpEngine = {
@@ -11,7 +12,7 @@ const nlpEngine = {
 }
 
 
-function callNLPEngine(nlpPayload) {
+async function callNLPEngine(nlpPayload) {
     if (!nlpPayload) throw Error("the input object for callNlpEngine function is invalid");
     if (!("query" in nlpPayload)) throw Error("user query is not found in nlpPayload");
     if (!nlpPayload.query) throw Error("nlp payload must contain user query");
@@ -20,10 +21,10 @@ function callNLPEngine(nlpPayload) {
     // call NLP API here
     const nlpName = config.nlp.name;
     switch (nlpName) {
-        case nlpEngine.luis:
-            return callLuis(nlpPayload);
-        case nlpEngine.converse:
-            return callConverse(nlpPayload);
+        case config.nlpEngine.luis:
+            return await callLuis(nlpPayload);
+        case config.nlpEngine.converse:
+            return await callConverse(nlpPayload);
     }
 
     nlpResponse = {

@@ -24,25 +24,11 @@ const luisResponse = {
         "entities": {
             "EfileReportTypes": [
                 [
-                    "us efile"
-                ],
-                [
                     "canada efile"
                 ]
             ],
             "$instance": {
                 "EfileReportTypes": [
-                    {
-                        "type": "EfileReportTypes",
-                        "text": "us efile",
-                        "startIndex": 9,
-                        "length": 8,
-                        "modelTypeId": 5,
-                        "modelType": "List Entity Extractor",
-                        "recognitionSources": [
-                            "model"
-                        ]
-                    },
                     {
                         "type": "EfileReportTypes",
                         "text": "canada efile",
@@ -60,17 +46,19 @@ const luisResponse = {
     }
 }
 
-function callLuis(nlpPayload) {
+async function callLuis(nlpPayload) {
     const rs = new RESTcall({
         url: config.nlp.url + nlpPayload.query,
         method: config.nlp.method
     });
 
-    rs.execute().then(res => {
-
+    const luisResponse = await rs.execute().then(nlpResp => {
+        return nlpResp;
     }).catch(e => {
-
+        throw Error("error while accessing nlp endpoint");
     });
+
+    return luisResponse;
 }
 
 module.exports = callLuis;

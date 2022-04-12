@@ -10,7 +10,7 @@
             "values": []
         },
         {
-            "value": "business metrics report",
+            "value": "GenerateReport",
             "valueType":"text",
             "responseType": "AskEntity",
             "entity": "ReportType",
@@ -20,7 +20,7 @@
                     "value": "efile usage metrics",
                     "valueType":"text",
                     "responseType": "AskEntity",
-                    "entity": "EfileType",
+                    "entity": "EfileReportTypes",
                     "message": "5",
                     "values": [
                         {
@@ -32,7 +32,7 @@
                             "values": []
                         },
                         {
-                            "value": "Canada eFile",
+                            "value": "canada efile",
                             "valueType":"text",
                             "responseType": "AskEntity",
                             "entity": "StartDate",
