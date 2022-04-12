@@ -52,11 +52,11 @@ async function callLuis(nlpPayload) {
         method: config.nlp.method
     });
 
-    const luisResponse = await rs.execute().then(nlpResp => {
-        return nlpResp;
-    }).catch(e => {
-        throw Error("error while accessing nlp endpoint");
-    });
+    // const luisResponse = await rs.execute().then(nlpResp => {
+    //     return nlpResp;
+    // }).catch(e => {
+    //     throw Error("error while accessing nlp endpoint");
+    // });
 
     return luisResponse;
 }

@@ -9,6 +9,7 @@ class RESTNode {
     constructor(params, retryEnabled = true) {
         const uri = new URL(params.url);
         this.baseURL = uri.origin;
+        this.params = new URLSearchParams(uri.search);
         this.pathname = uri.pathname;
         this.url = params.url;
         this.httpMethod = params.method;
