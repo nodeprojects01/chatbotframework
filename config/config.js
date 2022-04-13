@@ -11,6 +11,11 @@ const config = {
         luis: "LUIS",
         converse: "CONVERSE",
         lex: "LEX"
+    },
+    storage: "JSONFile",
+    conversationStorage: {
+        jsonFile: "JSONFile",
+        mongodb: "mongoDB"
     }
 }
 

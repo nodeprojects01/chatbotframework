@@ -1,6 +1,6 @@
 
 const config = require("../../config/config");
-
+const moment = require("moment");
 
 // NLP response event
 var responseEvent = {
@@ -47,6 +47,7 @@ function formatLuisResponse(nlpResponse) {
     }
     responseEvent.entities = entities;
     responseEvent.sessionAttributes = nlpResponse.sessionAttributes ? nlpResponse.sessionAttributes : {};
+    responseEvent.timeStamp = moment().toISOString();
     return responseEvent;
 }
 

@@ -8,9 +8,10 @@
     "axios-retry": "^3.1.9",
     "cors": "^2.8.5",
     "express": "^4.17.2",
+    "fs": "0.0.1-security",
     "jsonpath": "^1.1.1",
     "lodash.get": "^4.4.2",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "winston": "^3.3.3",
     "xss-filters": "^1.2.7"
   },
