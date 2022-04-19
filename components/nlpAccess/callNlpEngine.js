@@ -5,12 +5,6 @@ const filename = __filename.slice(__dirname.length + 1, -3);
 const callLuis = require("./callLuis");
 require("../../globalVars");
 
-const nlpEngine = {
-    luis: "LUIS",
-    converse: "CONVERSE",
-    lex: "LEX"
-}
-
 
 async function callNLPEngine(nlpPayload) {
     if (!nlpPayload) throw Error("the input object for callNlpEngine function is invalid");
@@ -19,15 +13,27 @@ async function callNLPEngine(nlpPayload) {
 
     var nlpResponse = {};
     // call NLP API here
-    const nlpName = config.nlp.name;
+    const nlpName = global.appSessionMemory.manifests.botModel.nlp.name;
     switch (nlpName) {
-        case config.nlpEngine.luis:
+        case config.nlpEngines.luis:
             return await callLuis(nlpPayload);
-        case config.nlpEngine.converse:
+        case config.nlpEngines.converse:
             return await callConverse(nlpPayload);
     }
 
-    return nlpResponse;
+    // nlpResponse = {
+    //     query: nlpPayload.query,
+    //     intent: "business metrics report",
+    //     entities: {
+    //         "ReportType": null,
+    //         "EfileType": "Puerto Rico eFile",
+    //         "StartDate": null,
+    //         "EndDate": "25-03-2022"
+    //     },
+    //     sessionAttributes: {}
+    // };
+
+    // return nlpResponse;
 }
 
 

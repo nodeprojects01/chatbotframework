@@ -10,7 +10,7 @@ const { searchResponseTree } = require("./components/dataRetriever/searchTree");
 const { resolveResponseFormats } = require("./components/dataRetriever/resolveResponseFormats");
 const { saveConversation } = require("./components/conversationStorage/saveConversation");
 const { translateToUIFormat } = require("./components/translator/translateToUIFormat");
-const botModel = require("./" + config.botModelPath);
+
 
 async function getStep(step, obj) {
     switch (step) {
@@ -25,6 +25,7 @@ async function getStep(step, obj) {
     }
 }
 
+// initialize - load app configs and chatbot manifest files
 // getUserInput - get user utterance
 // createNlpPayload - format to NLP input template with user input details
 // callNLPEngine - call nlp and get event object
@@ -47,7 +48,7 @@ const steps = {
 async function executeSteps(userInput) {
     var finalOutput = userInput;
     for (const step of Object.values(steps)) {
-        log.debug(`executing step - [ ${step} ]`);
+        log.debug(`${filename} > executing step - [ ${step} ]`);
         finalOutput = await getStep(step, finalOutput);
     };
 

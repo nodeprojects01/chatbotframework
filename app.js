@@ -10,6 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 const filename = __filename.slice(__dirname.length + 1);
 const executeSteps = require("./index.js");
 const formatErrorDetails = require("./actions/FormatErrorDetails");
+const { initialize } = require("./components/initializer/loadAppConfigs");
 
 
 function xssFilter(obj) {
@@ -44,14 +45,12 @@ app.post("/getQueryResponse", async (req, res) => {
 });
 
 
-// app.listen(port, () => {
-//     log.info(`framework is listening to port: ${port}`);
-// });
 
 // ================= For testing ========================
 
-function start() {
+async function start() {
     try {
+
         executeSteps({ query: "download us efile and canada efile report" }).then((res) => {
             console.log("response =>", res);
             console.log("process completed");
@@ -64,5 +63,21 @@ function start() {
     }
 }
 
-start();
+// load application configs and chatbot manifest files
+initialize().then(r => {
+    app.listen(port, () => {
+        log.info(`framework is listening to port: ${port}`);
+    });
+    // executeSteps({ query: "download us efile and canada efile report" }).then((res) => {
+    //     console.log("response =>", res);
+    //     console.log("process completed");
+    // }).catch(e => {
+    //     log.error(`${filename} > start - error - ${e}`)
+    // });
+}).catch(e => console.log("error", e));
+
+
+
+// start();
+
 // ================= For testing ========================

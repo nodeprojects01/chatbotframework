@@ -1,7 +1,5 @@
 
 const config = require("../../config/config");
-const botModel = require("../.." + config.botModelPath);
-const responseModel = require("../.." + config.responseModelPath);
 const { log } = require("../../config/logger");
 const SearchTree = require("./Traverse");
 const lodash = require('lodash.get');
@@ -35,18 +33,18 @@ function nth_occurrence(string, char, nth) {
  */
 async function searchResponseTree(nlpEvent) {
     if (!nlpEvent) throw Error("the input object for searchResponseTree function is invalid");
-    if (!botModel) throw Error("bot model is not valid");
-    if (!("intents" in botModel)) throw Error("bot model does not contain necessary key values");
+    if (!global.appSessionMemory.manifests.botModel) throw Error("bot model is not valid");
+    if (!("intents" in global.appSessionMemory.manifests.botModel)) throw Error("bot model does not contain necessary key values");
 
     try {
         var targetNode = "";
-        const rootNode = botModel.intents.filter(o => o.value.toLowerCase() == nlpEvent.intent.toLowerCase());
-        const intentIndex = botModel.intents.findIndex(item => item.value.toLowerCase() === nlpEvent.intent.toLowerCase());
+        const rootNode = global.appSessionMemory.manifests.botModel.intents.filter(o => o.value.toLowerCase() == nlpEvent.intent.toLowerCase());
+        const intentIndex = global.appSessionMemory.manifests.botModel.intents.findIndex(item => item.value.toLowerCase() === nlpEvent.intent.toLowerCase());
         if (!rootNode) {
             // return exception message
             // bot model must have invalid values that are not matching the bot's entity values
             log.error(`${filename} > ${arguments.callee.name}: bot model must have invalid intent name that is not matching the bot's intent name`);
-            return responseModel.messages.default.error;
+            return global.appSessionMemory.manifests.responseModel.messages.default.error;
         }
         else {
             // when no entities are available, guide user flow from the root node
@@ -82,7 +80,7 @@ function findCommonPath(intentIndex, paths) {
         var v = pathArr[k].slice(0, i + 1).join('.');
         if (!options.includes(v)) {
             const strPath = `intents[${intentIndex}]` + v + ".value";
-            const targetvalue = lodash(botModel, strPath);
+            const targetvalue = lodash(global.appSessionMemory.manifests.botModel, strPath);
             options.push(targetvalue)
         }
     }
@@ -113,11 +111,11 @@ async function searchThroughTree(intentIndex, rootNode, entities) {
             // return exception message
             // bot model must have invalid values that are not matching the bot's entity values
             log.error(`${filename} > ${arguments.callee.name}: bot model must have invalid values that are not matching the bot's entity values`);
-            return responseModel.messages.default.error;
+            return global.appSessionMemory.manifests.responseModel.messages.default.error;
         }
         var path = await st.checkRequiredNodeinDotPath(rootNode[0], selectedPath.substring(1));
         const strPath = `intents[${intentIndex}]` + path;
-        const targetNode = lodash(botModel, strPath);
+        const targetNode = lodash(global.appSessionMemory.manifests.botModel, strPath);
         if (options && options.length > 0) {
             targetNode.values = targetNode.values.filter(v => options.includes(v.value))
         }

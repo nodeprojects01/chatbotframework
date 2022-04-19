@@ -98,8 +98,8 @@
                 "messageType": "QuickReplies",
                 "options": [
                     {
-                        "displayName": "DocType Intgration Report",
-                        "actualMessage": "DocType Intgration Report"
+                        "displayName": "DocType Integration Report",
+                        "actualMessage": "DocType Integration Report"
                     },
                     {
                         "displayName": "eFile Usage Metrics",
