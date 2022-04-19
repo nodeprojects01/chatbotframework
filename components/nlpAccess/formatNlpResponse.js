@@ -10,7 +10,7 @@ var responseEvent = {
     intent: "business metrics report",
     entities: {
         "ReportType": null,
-        "EfileReportTypes": "H&W eFile",
+        "EfileReportTypes": ["us eFile", "canada eFile"],
         "StartDate": null,
         "EndDate": null
     },
@@ -42,8 +42,14 @@ function formatLuisResponse(nlpResponse) {
     responseEvent.query = nlpResponse.query;
     responseEvent.intent = nlpResponse.prediction.topIntent;
     var entities = {}
-    for (const [key, value] of Object.entries(nlpResponse.prediction.entities["$instance"])) {
-        entities[key] = value[0].text;
+    for (const [key, value] of Object.entries(nlpResponse.prediction.entities)) {
+        if (key != "$instance") {
+            var entArr = [];
+            value.forEach(v => {
+                entArr.push(v[0]);
+            });
+            entities[key] = entArr.join("||");
+        }
     }
     responseEvent.entities = entities;
     responseEvent.sessionAttributes = nlpResponse.sessionAttributes ? nlpResponse.sessionAttributes : {};

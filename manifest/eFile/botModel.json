@@ -3,17 +3,24 @@
     "sessionAttributes": {},
     "intents": [
         {
-            "value": "welcome",
+            "value": "Greeting",
             "responseType": "Close",
             "entity": null,
             "message": "1",
             "values": []
         },
         {
-            "value": "GenerateReport",
+            "value": "Help",
+            "responseType": "Close",
+            "entity": null,
+            "message": "1",
+            "values": []
+        },
+        {
+            "value": "generateReport",
             "valueType":"text",
             "responseType": "AskEntity",
-            "entity": "ReportType",
+            "entity": "ReportTypes",
             "message": "4",
             "values": [
                 {
@@ -32,7 +39,7 @@
                             "values": []
                         },
                         {
-                            "value": "canada efile",
+                            "value": "Canada Efile",
                             "valueType":"text",
                             "responseType": "AskEntity",
                             "entity": "StartDate",
@@ -83,7 +90,7 @@
                         {
                             "value": "H&W eFile",
                             "responseType": "AskEntity",
-                            "entity": "EfileType",
+                            "entity": "EfileReportTypes",
                             "required":true,
                             "message": "6",
                             "values": [{

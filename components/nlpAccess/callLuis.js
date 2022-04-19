@@ -4,7 +4,7 @@ const config = require("../../config/config");
 
 
 const luisResponse = {
-    "query": "download us efile and canada efile report",
+    "query": "download canada efile report",
     "prediction": {
         "topIntent": "GenerateReport",
         "intents": {
@@ -25,6 +25,9 @@ const luisResponse = {
             "EfileReportTypes": [
                 [
                     "canada efile"
+                ],
+                [
+                    "us efile"
                 ]
             ],
             "$instance": {
@@ -32,6 +35,17 @@ const luisResponse = {
                     {
                         "type": "EfileReportTypes",
                         "text": "canada efile",
+                        "startIndex": 22,
+                        "length": 12,
+                        "modelTypeId": 5,
+                        "modelType": "List Entity Extractor",
+                        "recognitionSources": [
+                            "model"
+                        ]
+                    },
+                    {
+                        "type": "EfileReportTypes",
+                        "text": "us efile",
                         "startIndex": 22,
                         "length": 12,
                         "modelTypeId": 5,
@@ -52,11 +66,11 @@ async function callLuis(nlpPayload) {
         method: config.nlp.method
     });
 
-    // const luisResponse = await rs.execute().then(nlpResp => {
-    //     return nlpResp;
-    // }).catch(e => {
-    //     throw Error("error while accessing nlp endpoint");
-    // });
+    const luisResponse = await rs.execute().then(nlpResp => {
+        return nlpResp;
+    }).catch(e => {
+        throw Error("error while accessing nlp endpoint");
+    });
 
     return luisResponse;
 }

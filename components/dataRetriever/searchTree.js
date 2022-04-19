@@ -8,6 +8,7 @@ const lodash = require('lodash.get');
 const filename = __filename.slice(__dirname.length + 1, -3);
 require("../../globalVars");
 
+
 function nth_occurrence(string, char, nth) {
     var first_index = string.indexOf(char);
     var lfi = first_index + 1;
@@ -27,7 +28,6 @@ function nth_occurrence(string, char, nth) {
 }
 
 
-
 /**
  * The function traverse through response model to get response object
  * @param {*} nlpEvent 
@@ -40,8 +40,8 @@ async function searchResponseTree(nlpEvent) {
 
     try {
         var targetNode = "";
-        const rootNode = botModel.intents.filter(o => o.value == nlpEvent.intent);
-        const intentIndex = botModel.intents.findIndex(item => item.value === nlpEvent.intent);
+        const rootNode = botModel.intents.filter(o => o.value.toLowerCase() == nlpEvent.intent.toLowerCase());
+        const intentIndex = botModel.intents.findIndex(item => item.value.toLowerCase() === nlpEvent.intent.toLowerCase());
         if (!rootNode) {
             // return exception message
             // bot model must have invalid values that are not matching the bot's entity values
@@ -58,9 +58,11 @@ async function searchResponseTree(nlpEvent) {
     }
     catch (e) {
         log.error(`${filename} > ${arguments.callee.name}: something went wrong - ${e}`);
-        return e
+        throw Error(e);
     }
 }
+
+
 function findCommonPath(intentIndex, paths) {
     var pathArr = []
     var options = []
@@ -88,6 +90,8 @@ function findCommonPath(intentIndex, paths) {
     return [path, options]
 
 }
+
+
 async function searchThroughTree(intentIndex, rootNode, entities) {
     try {
         const st = new SearchTree(rootNode[0], entities);
@@ -122,8 +126,9 @@ async function searchThroughTree(intentIndex, rootNode, entities) {
     }
     catch (e) {
         log.error(`${filename} > ${arguments.callee.name}: something went wrong - ${e}`);
-        return e
+        throw (e);
     }
 }
+
 
 module.exports = { searchResponseTree };

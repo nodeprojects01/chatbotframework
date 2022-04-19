@@ -7,7 +7,7 @@ const moment = require('moment');
 const lodash = require('lodash.get');
 
 class SearchTree {
-    constructor(data,entities) {
+    constructor(data, entities) {
         if (!isJSON(data))
             throw new Error("invalide JSON input");
 
@@ -27,7 +27,7 @@ class SearchTree {
         return this.dotPaths;
     }
 
-    getRequiredPaths(){
+    getRequiredPaths() {
         return this.isrequired;
     }
 
@@ -56,7 +56,7 @@ class SearchTree {
         // if (node.required == true && !isValidValue) {
         //     req = 1;
         // }
-        this.stack.push(node.value + '_' + index );
+        this.stack.push(node.value + '_' + index);
         log.debug(`${filename} > traverse: pushed value to stack - ${node.value}`);
 
         if (Object.keys(this.entitiesToSearch).includes(entity) && isValidValue) {
@@ -104,7 +104,7 @@ class SearchTree {
             valueTypeValid = re.test(entityValue);
 
         }
-        else if (entityValue == nodeValue) {
+        else if (entityValue.toLowerCase() == nodeValue.toLowerCase()) {
             valueTypeValid = true
         }
         return valueTypeValid;
@@ -125,22 +125,22 @@ class SearchTree {
             }, []);
     }
 
-    async checkRequiredNodeinDotPath(node,path,finalTargetNode=""){
+    async checkRequiredNodeinDotPath(node, path, finalTargetNode = "") {
         var pos = path.indexOf('.');
 
-        var currentValue = path.substring(0,pos); 
+        var currentValue = path.substring(0, pos);
         var currentNode = lodash(node, currentValue);
-        if(currentNode && currentNode.required && !this.isvalueValid(currentNode.valueType,this.entities[node.entity],currentNode.value)){
+        if (currentNode && currentNode.required && !this.isvalueValid(currentNode.valueType, this.entities[node.entity], currentNode.value)) {
             return finalTargetNode;
         }
-        else if(pos==-1){
-            finalTargetNode = finalTargetNode+"."+path
+        else if (pos == -1) {
+            finalTargetNode = finalTargetNode + "." + path
             return finalTargetNode;
         }
-        else{
-            finalTargetNode=finalTargetNode+"."+currentValue
+        else {
+            finalTargetNode = finalTargetNode + "." + currentValue
         }
-        return this.checkRequiredNodeinDotPath(currentNode,path.substring(pos+1),finalTargetNode)
+        return this.checkRequiredNodeinDotPath(currentNode, path.substring(pos + 1), finalTargetNode)
     }
 }
 

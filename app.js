@@ -56,11 +56,11 @@ function start() {
             console.log("response =>", res);
             console.log("process completed");
         }).catch(e => {
-            log.error(`${filename} > start - error - ${JSON.stringify()}`)
+            log.error(`${filename} > start - error - ${e}`);
         });
     }
     catch (e) {
-        log.error(`${filename} > start - error - ${JSON.stringify(e)}`);
+        log.error(`${filename} > start - error - ${e}`);
     }
 }
 

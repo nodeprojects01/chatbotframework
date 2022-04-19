@@ -33,6 +33,7 @@ class RESTNode {
             var axiosObj = axios.create({
                 baseURL: this.baseURL,
                 method: this.httpMethod,
+                params: this.params,
                 headers: this.httpHeaders,
                 data: this.httpBody,
                 timeout: this.httpTimeout,
