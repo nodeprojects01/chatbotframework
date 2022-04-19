@@ -21,19 +21,19 @@ async function callNLPEngine(nlpPayload) {
             return await callConverse(nlpPayload);
     }
 
-    nlpResponse = {
-        query: nlpPayload.query,
-        intent: "business metrics report",
-        entities: {
-            "ReportType": null,
-            "EfileType": "Puerto Rico eFile",
-            "StartDate": null,
-            "EndDate": "25-03-2022"
-        },
-        sessionAttributes: {}
-    };
+    // nlpResponse = {
+    //     query: nlpPayload.query,
+    //     intent: "business metrics report",
+    //     entities: {
+    //         "ReportType": null,
+    //         "EfileType": "Puerto Rico eFile",
+    //         "StartDate": null,
+    //         "EndDate": "25-03-2022"
+    //     },
+    //     sessionAttributes: {}
+    // };
 
-    return nlpResponse;
+    // return nlpResponse;
 }
 
 

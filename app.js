@@ -45,10 +45,6 @@ app.post("/getQueryResponse", async (req, res) => {
 });
 
 
-// app.listen(port, () => {
-//     await initialize(); // load application configs and chatbot manifest files
-//     log.info(`framework is listening to port: ${port}`);
-// });
 
 // ================= For testing ========================
 
@@ -69,13 +65,19 @@ async function start() {
 
 // load application configs and chatbot manifest files
 initialize().then(r => {
-    executeSteps({ query: "download us efile and canada efile report" }).then((res) => {
-        console.log("response =>", res);
-        console.log("process completed");
-    }).catch(e => {
-        log.error(`${filename} > start - error - ${e}`)
+    app.listen(port, () => {
+        log.info(`framework is listening to port: ${port}`);
     });
+    // executeSteps({ query: "download us efile and canada efile report" }).then((res) => {
+    //     console.log("response =>", res);
+    //     console.log("process completed");
+    // }).catch(e => {
+    //     log.error(`${filename} > start - error - ${e}`)
+    // });
 }).catch(e => console.log("error", e));
+
+
+
 // start();
 
 // ================= For testing ========================
