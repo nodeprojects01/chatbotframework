@@ -1,22 +1,10 @@
 const config = require("../../config/config");
-const responseModel = require("../.." + config.responseModelPath);
 const RESTNode = require("../../actions/RESTCall");
 const lodash = require('lodash.get');
 const { log } = require("../../config/logger");
 const { performance } = require('perf_hooks');
 const filename = __filename.slice(__dirname.length + 1, -3);
 require("../../globalVars");
-
-const messageTypes = {
-    plainText: "PlainText",
-    quickReplies: "QuickReplies",
-    date: "Date",
-    hyperLink: "HyperLink",
-    multiLine: "MultiLine",
-    carousel: "Carousel",
-    plainTextByApi: "PlainTextByApi",
-    plainTextByEntities: "PlainTextByEntities"
-}
 
 async function getPlainTextByApi(responseNode) {
     log.info(`${filename} > ${arguments.callee.name}: calling the RESTNode`);
@@ -69,23 +57,23 @@ async function getPlainTextByEntities(responseNode, entities) {
 
 async function reponseFormatter(targetNode) {
     const nlpResponse = global.appSessionMemory.nlpResponse;
-    const msgArr = responseModel.messages[targetNode.message];
+    const msgArr = global.appSessionMemory.manifests.responseModel.messages[targetNode.message];
     var formattedResponse = [];
     if (msgArr && msgArr.length >= 1) {
         try {
             for (const m of msgArr) {
                 var resp = "";
                 switch (m.messageType) {
-                    case messageTypes.plainTextByApi:
+                    case config.messageTypes.plainTextByApi:
                         resp = await getPlainTextByApi(m);
                         break;
-                    case messageTypes.quickReplies:
+                    case config.messageTypes.quickReplies:
                         resp = await getQuickReplies(m, targetNode);
                         break;
-                    case messageTypes.plainTextByEntities:
+                    case config.messageTypes.plainTextByEntities:
                         resp = await getPlainTextByEntities(m, nlpResponse.entities);
                         break;
-                    case messageTypes.plainText:
+                    case config.messageTypes.plainText:
                     default:
                         resp = m;
                 }

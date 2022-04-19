@@ -48,8 +48,8 @@ const luisResponse = {
 
 async function callLuis(nlpPayload) {
     const rs = new RESTcall({
-        url: config.nlp.url + nlpPayload.query,
-        method: config.nlp.method
+        url: global.appSessionMemory.manifests.botModel.nlp.url + nlpPayload.query,
+        method: global.appSessionMemory.manifests.botModel.nlp.method
     });
 
     // const luisResponse = await rs.execute().then(nlpResp => {

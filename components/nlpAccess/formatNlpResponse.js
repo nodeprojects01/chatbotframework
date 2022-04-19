@@ -20,13 +20,15 @@ var responseEvent = {
 function formatNlpResponse(nlpResponse) {
     if (!nlpResponse) throw Error("the input object for formatNlpResponse function is invalid");
 
-    const nlpName = config.nlp.name;
+    const nlpName = global.appSessionMemory.manifests.botModel.nlp.name;
     var formattedNlpResponse = "";
     switch (nlpName) {
-        case config.nlpEngine.luis:
+        case config.nlpEngines.luis:
             formattedNlpResponse = formatLuisResponse(nlpResponse);
-        case config.nlpEngine.converse:
+            break;
+        case config.nlpEngines.converse:
             formattedNlpResponse = formatConverseResponse(nlpResponse);
+            break;
     }
 
     global.appSessionMemory.nlpResponse = formattedNlpResponse;

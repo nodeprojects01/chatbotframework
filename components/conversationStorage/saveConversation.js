@@ -42,9 +42,9 @@ function saveConversation(responseObject) {
     
     var saveStatus = true;
     switch (config.storage) {
-        case config.conversationStorage.jsonFile:
+        case config.conversationStorages.jsonFile:
             saveStatus = saveToJsonFile(conversation);
-        case config.conversationStorage.mongodb:
+        case config.conversationStorages.mongodb:
             saveStatus = saveToMongoDB(conversation);
     }
     if (!saveStatus) throw Error("error while saving the conversation");
