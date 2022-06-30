@@ -30,10 +30,12 @@ async function initialize() {
 }
 
 
-async function loadInputRequest(inputReq){
+async function loadInputRequest(inputReq) {
     global.appSessionMemory.userId = inputReq.userId;
     global.appSessionMemory.conversationId = inputReq.convId;
     global.appSessionMemory.transactionId = inputReq.transId;
+    global.appSessionMemory.sessionAttributes = inputReq.sessionAttributes ? inputReq.sessionAttributes : {};
+    global.appSessionMemory.previousIntentSummary = inputReq.previousIntentSummary ? inputReq.previousIntentSummary : {};
 
     return inputReq;
 }

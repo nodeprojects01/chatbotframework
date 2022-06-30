@@ -5,20 +5,23 @@ const filename = __filename.slice(__dirname.length + 1, -3);
 
 // NLP response event
 var botResponseEvent = {
-    userId: "testId",
+    userId: "",
     convId: "",
     transId: "",
-    query: "hello",
-    nlpResponse: {}
+    query: "",
+    previousIntentSummary: {},
+    askEntity: null,
+    botResponse: {},
+    sessionAttributes: {}
 }
 
-var botTitleMessage = {
+var botResponseMessage = {
     messageType: "",
     message: "",
     followMessage: []
 }
 
-function botResponse(obj) {
+function getBotResponseMessage(obj) {
     try {
         return {
             messageType: obj.messageType ? obj.messageType : "PlainText",
@@ -38,27 +41,27 @@ function prepareBotResponse(resp) {
     if (resp.message.length === 0) throw Error("the input object does not contain messages")
 
     var followMessages = [];
+    let responseMessage = {...botResponseMessage};
     resp.message.forEach((r, i) => {
         if (i === 0) {
-            botTitleMessage.messageType = r.messageType;
-            botTitleMessage.message = r.message;
+            responseMessage.messageType = r.messageType;
+            responseMessage.message = r.message;
         }
         else {
-            followMessages.push(botResponse(r));
+            followMessages.push(getBotResponseMessage(r));
         }
     });
-
-    botTitleMessage.followMessage = followMessages;
+    responseMessage.followMessage = followMessages;
     
-    botResponseEvent = {...botResponseEvent};
-    botResponseEvent.userId = global.appSessionMemory.userId;
-    botResponseEvent.convId = global.appSessionMemory.conversationId;
-    botResponseEvent.transId = global.appSessionMemory.transactionId;
-    botResponseEvent.query = global.appSessionMemory.query;
-    botResponseEvent.nlpResponse = global.appSessionMemory.nlpResponse;
-    botResponseEvent.botResponse = botTitleMessage
+    let botResponse = {...botResponseEvent};
+    botResponse.userId = global.appSessionMemory.userId;
+    botResponse.convId = global.appSessionMemory.conversationId;
+    botResponse.transId = global.appSessionMemory.transactionId;
+    botResponse.query = global.appSessionMemory.query;
+    botResponse.previousIntentSummary = global.appSessionMemory.nlpResponse;
+    botResponse.botResponse = responseMessage;
 
-    return botResponseEvent;
+    return botResponse;
 }
 
 module.exports = { prepareBotResponse }
