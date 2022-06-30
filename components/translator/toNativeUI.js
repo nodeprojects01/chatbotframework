@@ -2,6 +2,16 @@
 const { log } = require("../../config/logger");
 const filename = __filename.slice(__dirname.length + 1, -3);
 
+
+// NLP response event
+var botResponseEvent = {
+    userId: "testId",
+    convId: "",
+    transId: "",
+    query: "hello",
+    nlpResponse: {}
+}
+
 var botTitleMessage = {
     messageType: "",
     message: "",
@@ -39,7 +49,16 @@ function prepareBotResponse(resp) {
     });
 
     botTitleMessage.followMessage = followMessages;
-    return botTitleMessage;
+    
+    botResponseEvent = {...botResponseEvent};
+    botResponseEvent.userId = global.appSessionMemory.userId;
+    botResponseEvent.convId = global.appSessionMemory.conversationId;
+    botResponseEvent.transId = global.appSessionMemory.transactionId;
+    botResponseEvent.query = global.appSessionMemory.query;
+    botResponseEvent.nlpResponse = global.appSessionMemory.nlpResponse;
+    botResponseEvent.botResponse = botTitleMessage
+
+    return botResponseEvent;
 }
 
 module.exports = { prepareBotResponse }

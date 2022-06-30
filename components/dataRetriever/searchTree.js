@@ -42,7 +42,7 @@ async function searchResponseTree(nlpEvent) {
         const intentIndex = global.appSessionMemory.manifests.botModel.intents.findIndex(item => item.value.toLowerCase() === nlpEvent.intent.toLowerCase());
         if (!rootNode) {
             // return exception message
-            // bot model must have invalid values that are not matching the bot's entity values
+            // bot model must have invalid values that are not matching the bot's intent name
             log.error(`${filename} > ${arguments.callee.name}: bot model must have invalid intent name that is not matching the bot's intent name`);
             return global.appSessionMemory.manifests.responseModel.messages.default.error;
         }

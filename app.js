@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 const filename = __filename.slice(__dirname.length + 1);
 const executeSteps = require("./index.js");
 const formatErrorDetails = require("./actions/FormatErrorDetails");
-const { initialize } = require("./components/initializer/loadAppConfigs");
+const { initialize, loadInputRequest } = require("./components/initializer/loadAppConfigs");
 const { identifier } = require("jsonpath/lib/dict");
 
 
@@ -32,11 +32,12 @@ app.post("/getQueryResponse", async (req, res) => {
     try {
         log.info(`${filename} > getQueryResponse`);
         if (!("convid" in req.headers) || !("transid" in req.headers)) {
-            res.send(xssFilter({ statusCode: 500, msg: "request does't contain context headers" }));
+            log.error(`${filename} > getQueryResponse - the request does't contain conversation id and transaction id in context headers`);
+            res.send(xssFilter({ statusCode: 500, msg: "the request does't contain conversation id and transaction id in context headers" }));
         }
         else {
             const inputObj = { ...req.body, convId: req.headers.convid, transId: req.headers.transid };
-            console.log("chatContext", inputObj);
+            log.debug(`${filename} > getQueryResponse - chatContext contains - ${JSON.stringify(inputObj)}`);
             executeSteps(inputObj).then((resp) => {
                 log.info(`${filename} > getQueryResponse - process completed`);
                 const heads = {
@@ -67,6 +68,7 @@ function setContextHeaders(obj) {
 
 
 // load application configs and chatbot manifest files
+// once loaded, start the application
 initialize().then(() => {
     app.listen(port, () => {
         log.info(`chatbot framework is listening to port: ${port}`);

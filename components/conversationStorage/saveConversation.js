@@ -19,7 +19,6 @@ function saveConversation(responseObject) {
     const conversation = {
         id: 1,
         conversationId: nlpResponse.conversationId,
-        sessionId: nlpResponse.transactionId,
         transactionId: nlpResponse.transactionId,
         userQuery: nlpResponse.query,
         botResponse: responseObject,

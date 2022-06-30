@@ -4,8 +4,6 @@ const moment = require("moment");
 
 // NLP response event
 var responseEvent = {
-    conversationId: "ax1234bernzzz234499",  // can also be identified as session id
-    transactionId: "22344541",
     query: "hello",
     intent: "business metrics report",
     entities: {

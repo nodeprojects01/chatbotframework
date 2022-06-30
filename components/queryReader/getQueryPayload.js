@@ -1,4 +1,4 @@
-
+require("../../globalVars");
 
 /**
  * The function gets the user query and return in a local object format
@@ -13,6 +13,7 @@ function getUserInput(inputObject) {
     const userQueryPayload = {
         query: inputObject.query
     }
+    global.appSessionMemory.query = userQueryPayload.query;
     return userQueryPayload;
 }
 

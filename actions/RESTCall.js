@@ -62,10 +62,11 @@ class RESTNode {
                 // var responseStatusCode = error.response.status;
                 log.info(`${filename} > execute: REST Node finished in ${this.timeTaken(sdt)}s`);
                 var errorDetails = {
-                    status: error.response.status ? error.response.status : "500",
-                    statusText: error.response.statusText ? error.response.statusText : "Fail",
-                    message: error.message ? error.message : "Error"
+                    status: error?.response?.status ? error.response.status : "500",
+                    statusText: error?.response?.statusText ? error.response.statusText : "Fail",
+                    message: error?.message ? error.message : "Error"
                 }
+                log.error("error details ->> " + JSON.stringify(errorDetails));
                 reject(errorDetails);
             });
         });

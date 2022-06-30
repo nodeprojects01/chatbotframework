@@ -30,4 +30,12 @@ async function initialize() {
 }
 
 
-module.exports = { initialize }
+async function loadInputRequest(inputReq){
+    global.appSessionMemory.userId = inputReq.userId;
+    global.appSessionMemory.conversationId = inputReq.convId;
+    global.appSessionMemory.transactionId = inputReq.transId;
+
+    return inputReq;
+}
+
+module.exports = { initialize, loadInputRequest }

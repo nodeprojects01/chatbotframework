@@ -2,6 +2,7 @@
 const config = require("./config/config");
 const { log } = require("./config/logger");
 const filename = __filename.slice(__dirname.length + 1, -3);
+const { loadInputRequest } = require("./components/initializer/loadAppConfigs");
 const { getUserInput } = require("./components/queryReader/getQueryPayload");
 const { createNlpPayload } = require("./components/nlpAccess/createNlpPayload");
 const { callNLPEngine } = require("./components/nlpAccess/callNLPEngine");
@@ -12,8 +13,30 @@ const { saveConversation } = require("./components/conversationStorage/saveConve
 const { translateToUIFormat } = require("./components/translator/translateToUIFormat");
 
 
+// loadInputRequest - capture convId, transId and others to session state
+// getUserInput - get user utterance
+// createNlpPayload - format to NLP input template with user input details
+// callNLPEngine - call nlp and get event object
+// formatNlpResponse - get intent and entities
+// searchResponseTree - traverse through response model to get response object
+// resolveResponseFormats - get messages object from response model and unzip response formats
+// saveConversation - store conversation to database
+// translateToUIFormat - translate response object to chatbot ui format
+const steps = {
+    loadInputRequest: "loadInputRequest",
+    getUserInput: "getUserInput",
+    createNlpPayload: "createNlpPayload",
+    callNLPEngine: "callNLPEngine",
+    formatNlpResponse: "formatNlpResponse",
+    searchResponseTree: "searchResponseTree",
+    resolveResponseFormats: "resolveResponseFormats",
+    translateToUIFormat: "translateToUIFormat",
+    saveConversation: "saveConversation"
+}
+
 async function getStep(step, obj) {
     switch (step) {
+        case steps.loadInputRequest: return loadInputRequest(obj)
         case steps.getUserInput: return getUserInput(obj)
         case steps.createNlpPayload: return await createNlpPayload(obj)
         case steps.callNLPEngine: return await callNLPEngine(obj)
@@ -25,31 +48,12 @@ async function getStep(step, obj) {
     }
 }
 
-// initialize - load app configs and chatbot manifest files
-// getUserInput - get user utterance
-// createNlpPayload - format to NLP input template with user input details
-// callNLPEngine - call nlp and get event object
-// formatNlpResponse - get intent and entities
-// searchResponseTree - traverse through response model to get response object
-// resolveResponseFormats - get messages object from response model and unzip response formats
-// saveConversation - store conversation to database
-// translateToUIFormat - translate response object to chatbot ui format
-const steps = {
-    getUserInput: "getUserInput",
-    createNlpPayload: "createNlpPayload",
-    callNLPEngine: "callNLPEngine",
-    formatNlpResponse: "formatNlpResponse",
-    searchResponseTree: "searchResponseTree",
-    resolveResponseFormats: "resolveResponseFormats",
-    translateToUIFormat: "translateToUIFormat",
-    saveConversation: "saveConversation"
-}
-
 async function executeSteps(userInput) {
     var finalOutput = userInput;
     for (const step of Object.values(steps)) {
-        log.debug(`${filename} > executing step - [ ${step} ]`);
+        log.info(`${filename} > executing step - [ ${step} ]`);
         finalOutput = await getStep(step, finalOutput);
+        log.debug(`${filename} > finished step - [ ${step} ] - ${finalOutput && typeof(finalOutput) === 'string' ? finalOutput : JSON.stringify(finalOutput)}`);
     };
 
     return global.appSessionMemory.responseToChatbotUI;
