@@ -29,7 +29,6 @@ async function initialize() {
     log.info(`${filename} > ${arguments.callee.name} - ${config.appName} is initialized`);
 }
 
-
 async function loadInputRequest(inputReq) {
     global.appSessionMemory.userId = inputReq.userId;
     global.appSessionMemory.conversationId = inputReq.convId;

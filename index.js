@@ -50,12 +50,17 @@ async function getStep(step, obj) {
 
 async function executeSteps(userInput) {
     var finalOutput = userInput;
+    console.log(`***********************************************************************************`);
+    console.log(`******************************** EXECUTION STARTED ********************************`);
+    console.log(`***********************************************************************************`);
     for (const step of Object.values(steps)) {
         log.info(`${filename} > executing step - [ ${step} ]`);
         finalOutput = await getStep(step, finalOutput);
         log.debug(`${filename} > finished step - [ ${step} ] - ${finalOutput && typeof(finalOutput) === 'string' ? finalOutput : JSON.stringify(finalOutput)}`);
     };
-
+    console.log(`***********************************************************************************`);
+    console.log(`******************************** EXECUTION COMPLETED ******************************`);
+    console.log(`***********************************************************************************`);
     return global.appSessionMemory.responseToChatbotUI;
 }
 
